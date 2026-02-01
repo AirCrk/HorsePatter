@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const grassland = document.getElementById('grassland');
     const scoreElement = document.getElementById('score');
     const toast = document.getElementById('toast');
+    const itemCountElement = document.getElementById('item-count-display');
     // Modals
     const redPacketModal = document.getElementById('red-packet-modal');
     // Using specific IDs for close buttons now
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const finalScoreElement = document.getElementById('final-score');
     const finalWechatCountElement = document.getElementById('final-wechat-count');
     const restartBtn = document.getElementById('restart-btn');
-    const shareBtn = document.getElementById('share-btn');
+    const unlockWechatBtn = document.getElementById('unlock-wechat-btn');
     const gameOverCloseBtn = document.getElementById('game-over-close');
     
     let score = 0;
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let timeLeft = 60;
     let timerInterval;
     let isGameOver = false;
+    let isPaused = false;
 
     function startTimer() {
         // Reset timer
@@ -36,13 +38,20 @@ document.addEventListener('DOMContentLoaded', () => {
             clockProgress.style.strokeDashoffset = 0;
         }
         isGameOver = false;
+        isPaused = false;
         
+        startTimerLoop();
+    }
+    
+    function startTimerLoop() {
         // Clear existing interval if any
         if (timerInterval) clearInterval(timerInterval);
         
         const circumference = 113; // 2 * PI * 18
         
         timerInterval = setInterval(() => {
+            if (isPaused) return;
+            
             timeLeft--;
             timerElement.textContent = `${timeLeft}s`;
             
@@ -56,6 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 endGame();
             }
         }, 1000);
+    }
+    
+    function pauseTimer() {
+        isPaused = true;
+    }
+    
+    function resumeTimer() {
+        isPaused = false;
     }
     
     const flashImages = [
@@ -94,22 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (wechatClaimBtn) {
-        wechatClaimBtn.addEventListener('click', () => {
-            hideWechatItemModal();
-            score += 20; // More points for rare item?
-            wechatItemCount++; // Increment count
-            scoreElement.textContent = `拍马屁次数: ${score}`;
-            showToast("微信道具解锁成功！");
-        });
-    }
+    // wechatClaimBtn removed
 
     if (restartBtn) {
         restartBtn.addEventListener('click', restartGame);
     }
 
-    if (shareBtn) {
-        shareBtn.addEventListener('click', handleShare);
+    if (unlockWechatBtn) {
+        unlockWechatBtn.addEventListener('click', handleUnlockWechat);
     }
 
     if (gameOverCloseBtn) {
@@ -130,18 +139,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showRedPacketModal() {
         redPacketModal.classList.remove('hidden');
+        pauseTimer();
     }
 
     function hideRedPacketModal() {
         redPacketModal.classList.add('hidden');
+        resumeTimer();
     }
 
     function showWechatItemModal() {
         wechatItemModal.classList.remove('hidden');
+        pauseTimer();
+        
+        // Increment count immediately when found
+        wechatItemCount++;
+        score += 20; // Add score immediately since button is removed
+        scoreElement.textContent = `拍马屁次数: ${score}`;
+
+        if (itemCountElement) {
+            itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+            // Animation
+            itemCountElement.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+                itemCountElement.style.transform = 'scale(1)';
+            }, 200);
+        }
     }
 
     function hideWechatItemModal() {
         wechatItemModal.classList.add('hidden');
+        resumeTimer();
     }
 
     // Create horses
@@ -379,8 +406,19 @@ document.addEventListener('DOMContentLoaded', () => {
         butt.className = 'butt-area';
         butt.title = '点击领取红包';
         
+        let hasBeenClicked = false; // Track if this horse has been clicked
+        
         butt.addEventListener('click', (e) => {
             e.stopPropagation();
+            
+            if (hasBeenClicked) {
+                showToast("这匹马已经被拍过了！");
+                return;
+            }
+            
+            hasBeenClicked = true;
+            butt.style.cursor = 'default'; // Visual feedback
+            
             playCoinSound();
             showRandomImage(e.clientX, e.clientY);
             
@@ -395,6 +433,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // For now, just show modal. It continues its running-across animation.
         });
         
+        // Reset click status when horse reappears (animation loops)
+        horse.addEventListener('animationiteration', () => {
+            hasBeenClicked = false;
+            butt.style.cursor = 'pointer';
+        });
+
         horse.appendChild(butt);
         
         grassland.appendChild(horse);
@@ -758,16 +802,21 @@ document.addEventListener('DOMContentLoaded', () => {
         isGameOver = true;
         
         // Show game over modal
-        finalScoreElement.textContent = `以下是您拍马屁的次数排行：`;
+        finalScoreElement.innerHTML = `本次总计拍马屁: <span style="font-size: 1.5em; color: #f0ad4e; font-weight: bold;">${score}</span> 次`;
         
         if (finalWechatCountElement) {
-            finalWechatCountElement.textContent = `获得微信道具: ${wechatItemCount} 个`;
+            finalWechatCountElement.innerHTML = `🔓 获得解锁道具: <span style="font-size: 1.3em;">${wechatItemCount}</span> 个`;
+        }
+
+        // Update unlock button text
+        if (unlockWechatBtn) {
+            unlockWechatBtn.textContent = '解锁微信';
         }
         
         // Generate Leaderboard
         const leaderboard = document.getElementById('leaderboard');
         if (leaderboard) {
-            leaderboard.innerHTML = ''; // Clear previous
+            leaderboard.innerHTML = '<p style="margin: 10px 0; font-size: 0.9em; color: #666;">--- 拍得最响的部位 ---</p>'; // Header
             
             // Convert counts to array and sort
             const sortedImages = Object.entries(imageClickCounts)
@@ -798,6 +847,12 @@ document.addEventListener('DOMContentLoaded', () => {
         wechatItemCount = 0;
         imageClickCounts = {};
         scoreElement.textContent = `拍马屁次数: ${score}`;
+        
+        // Reset item count display
+        if (itemCountElement) {
+            itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+        }
+        
         gameOverModal.classList.add('hidden');
         
         // Remove all horses and recreate them
@@ -810,44 +865,21 @@ document.addEventListener('DOMContentLoaded', () => {
         startTimer();
     }
 
-    async function handleShare() {
-        // Get top patted person
-        const sortedImages = Object.entries(imageClickCounts)
-            .sort(([, countA], [, countB]) => countB - countA);
-        
-        let shareText = `我在《拍马屁交友盲盒》中拍了${score}次马屁！`;
-        if (sortedImages.length > 0) {
-            shareText += `最受我青睐的是第1名，被我拍了${sortedImages[0][1]}次！`;
-        }
-        shareText += ` 快来试试你的手速吧！ ${window.location.href}`;
-
-        // Try Web Share API first
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: '拍马屁交友盲盒',
-                    text: shareText,
-                    url: window.location.href
-                });
-                showToast("分享成功！");
-            } catch (err) {
-                // If user cancels or error, fallback to clipboard if not AbortError
-                if (err.name !== 'AbortError') {
-                    copyToClipboard(shareText);
-                }
-            }
+    async function handleUnlockWechat() {
+        if (wechatItemCount > 0) {
+            const wechatId = "yanyubao123"; // Placeholder ID
+            copyToClipboard(wechatId, "微信号已复制: " + wechatId);
         } else {
-            // Fallback to clipboard
-            copyToClipboard(shareText);
+            showToast("你还没有获得解锁道具哦！");
         }
     }
 
-    function copyToClipboard(text) {
+    function copyToClipboard(text, successMessage) {
         navigator.clipboard.writeText(text).then(() => {
-            showToast("战绩已复制到剪贴板！");
+            showToast(successMessage || "内容已复制到剪贴板！");
         }).catch(err => {
             console.error('Could not copy text: ', err);
-            showToast("复制失败，请截图分享");
+            showToast("复制失败，请手动复制");
         });
     }
 
