@@ -8,6 +8,7 @@
 </head>
 <body>
     <div class="prompt-container">
+        <button id="music-toggle" class="music-btn" title="开关音乐">🔇</button>
         <h1>拍马屁交友盲盒</h1>
         <div class="timer-container">
             <svg class="clock-svg" width="40" height="40" viewBox="0 0 40 40">
@@ -42,6 +43,11 @@
             <button id="restart-btn">再来一次</button>
         </div>
     </div>
+
+    <!-- Background Music -->
+    <audio id="bg-music" loop>
+        <source src="https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E4%B8%80%E5%89%AA%E6%A2%85.aac" type="audio/aac">
+    </audio>
 
     <script src="script.js"></script>
 </body>

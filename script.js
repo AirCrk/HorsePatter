@@ -11,6 +11,55 @@ document.addEventListener('DOMContentLoaded', () => {
     const finalScoreElement = document.getElementById('final-score');
     const restartBtn = document.getElementById('restart-btn');
     
+    // Background Music Control
+    const bgMusic = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-toggle');
+    let isMusicPlaying = false;
+
+    // Set initial volume
+    if (bgMusic) {
+        bgMusic.volume = 0.5;
+    }
+
+    function toggleMusic() {
+        if (!bgMusic) return;
+        
+        if (bgMusic.paused) {
+            bgMusic.play().then(() => {
+                isMusicPlaying = true;
+                musicBtn.textContent = '🎵';
+                musicBtn.classList.remove('muted');
+            }).catch(e => console.error("Music play failed:", e));
+        } else {
+            bgMusic.pause();
+            isMusicPlaying = false;
+            musicBtn.textContent = '🔇';
+            musicBtn.classList.add('muted');
+        }
+    }
+
+    if (musicBtn) {
+        musicBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent triggering game start if we add click-to-start later
+            toggleMusic();
+        });
+    }
+
+    // Try to auto-play on first interaction
+    document.body.addEventListener('click', function startMusicOnInteraction() {
+        if (bgMusic && bgMusic.paused && !isMusicPlaying) {
+             bgMusic.play().then(() => {
+                isMusicPlaying = true;
+                if (musicBtn) {
+                    musicBtn.textContent = '🎵';
+                    musicBtn.classList.remove('muted');
+                }
+            }).catch(() => {
+                // Autoplay might still be blocked or failed
+            });
+        }
+    }, { once: true });
+    
     let score = 0;
     let imageClickCounts = {};
     let timeLeft = 60;
