@@ -267,6 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         butt.addEventListener('click', (e) => {
             e.stopPropagation();
+            playCoinSound();
             showRandomImage(e.clientX, e.clientY);
             showRedPacketModal();
             // Optional: Also make it run away or disappear?
@@ -351,6 +352,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function playRunningSound() {
         const audio = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/1%E6%9C%8831%E6%97%A5.aac');
         audio.play().catch(e => console.error("Audio play failed:", e));
+    }
+
+    function playCoinSound() {
+        const audio = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E9%87%91%E5%B8%81.aac');
+        audio.play().catch(e => console.error("Coin audio play failed:", e));
     }
 
     // Audio Context
