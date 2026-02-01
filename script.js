@@ -348,8 +348,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const interval = 3000 + Math.random() * 5000;
 
         setTimeout(() => {
-            // 允许同时存在最多2匹白马
-            if (document.querySelectorAll('.white-horse').length < 2) {
+            // 每次只出现一匹白马
+            if (document.querySelectorAll('.white-horse').length === 0) {
                 spawnWhiteHorse();
             }
             startWhiteHorseSpawner(); // Schedule next spawn check
