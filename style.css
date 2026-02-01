@@ -122,15 +122,15 @@ html {
     position: absolute;
     top: 40px;
     /* Moved down to make room for marquee */
-    left: 50%;
-    transform: translateX(-50%);
+    left: 20px;
+    /* Positioned at top left */
     background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px;
+    padding: 15px 20px;
     border-radius: 15px;
-    text-align: center;
+    text-align: left;
+    /* Left align text */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 10;
-    max-width: 90%;
 }
 
 .item-count-display {
@@ -164,7 +164,7 @@ html {
 .timer-container {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 10px;
     margin-bottom: 5px;
 }
@@ -224,7 +224,7 @@ html {
 }
 
 .toast {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -236,7 +236,8 @@ html {
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
-    z-index: 20;
+    z-index: 2000;
+    /* 高于 modal 的 z-index (1000)，确保复制成功提示能显示在弹窗之上 */
 }
 
 .toast.show {
@@ -620,7 +621,17 @@ html {
     font-size: 14px;
     font-weight: bold;
     color: #fff;
+    margin-bottom: 5px;
+}
+
+.click-count {
+    font-size: 12px;
+    color: #ccc;
     margin-bottom: 8px;
+    padding: 3px 8px;
+    background: rgba(240, 173, 78, 0.2);
+    border-radius: 10px;
+    display: inline-block;
 }
 
 .person-wechat {
@@ -686,4 +697,65 @@ html {
     color: #f0ad4e;
     padding: 20px;
     font-size: 14px;
+}
+
+/* Restart Prompt Modal */
+.restart-prompt-content {
+    background: linear-gradient(145deg, #2d1b4e, #1a1a2e);
+    color: white;
+    padding: 40px;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: popIn 0.4s ease-out;
+}
+
+.restart-prompt-content h2 {
+    font-size: 32px;
+    margin-bottom: 15px;
+    color: #f0ad4e;
+}
+
+.restart-prompt-content p {
+    font-size: 18px;
+    color: #ccc;
+    margin-bottom: 25px;
+}
+
+.restart-prompt-btn {
+    padding: 15px 40px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, #f0ad4e, #ec971f);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(240, 173, 78, 0.4);
+}
+
+.restart-prompt-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(240, 173, 78, 0.6);
+}
+
+.restart-prompt-btn:active {
+    transform: translateY(0);
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }

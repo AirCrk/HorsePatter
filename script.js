@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameOverCloseBtn = document.getElementById('game-over-close');
     const peopleListElement = document.getElementById('people-list');
 
+    // Restart Prompt Modal
+    const restartPromptModal = document.getElementById('restart-prompt-modal');
+    const restartPromptBtn = document.getElementById('restart-prompt-btn');
+
     // Countdown elements
     const countdownOverlay = document.getElementById('countdown-overlay');
     const countdownNumber = document.getElementById('countdown-number');
@@ -163,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
             hideRedPacketModal();
             // Optional: Add score or special effect
             score += 10;
-            scoreElement.textContent = `拍马屁次数: ${score}`;
+            scoreElement.textContent = `已拍马屁人数: ${Object.keys(imageClickCounts).length}`;
             showToast("红包领取成功！正在跳转...");
 
             // Redirect to the red packet URL
@@ -182,6 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (gameOverCloseBtn) {
         gameOverCloseBtn.addEventListener('click', () => {
             gameOverModal.classList.add('hidden');
+            // 显示重新进入游戏弹窗
+            restartPromptModal.classList.remove('hidden');
+        });
+    }
+
+    // Restart Prompt Button - restart the game
+    if (restartPromptBtn) {
+        restartPromptBtn.addEventListener('click', () => {
+            restartPromptModal.classList.add('hidden');
+            restartGame();
         });
     }
 
@@ -192,6 +206,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (e.target === wechatItemModal) {
             hideWechatItemModal();
+        }
+        // 点击遮罩层也可以关闭重启提示弹窗并重启游戏
+        if (e.target === restartPromptModal) {
+            restartPromptModal.classList.add('hidden');
+            restartGame();
         }
     });
 
@@ -212,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Increment count immediately when found
         wechatItemCount++;
         score += 20; // Add score immediately since button is removed
-        scoreElement.textContent = `拍马屁次数: ${score}`;
+        scoreElement.textContent = `已拍马屁人数: ${Object.keys(imageClickCounts).length}`;
 
         if (itemCountElement) {
             itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
@@ -721,14 +740,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function patButt(x, y) {
-        score++;
-        scoreElement.textContent = `拍马屁次数: ${score}`;
+        // 先显示随机头像（这会更新 imageClickCounts）
+        showRandomImage(x, y);
+
+        // 统计去重后的人数
+        const uniqueCount = Object.keys(imageClickCounts).length;
+        scoreElement.textContent = `已拍马屁人数: ${uniqueCount}`;
 
         // Show visual feedback at click location
         showFeedback(x, y);
-
-        // Show random flashing image
-        showRandomImage(x, y);
 
         // Show toast
         showToast();
@@ -860,41 +880,69 @@ document.addEventListener('DOMContentLoaded', () => {
         isGameOver = true;
 
         // Show game over modal
-        finalScoreElement.innerHTML = `本次总计拍马屁: <span style="font-size: 1.5em; color: #f0ad4e; font-weight: bold;">${score}</span> 次`;
+        // 统计去重后的人数
+        const uniquePeopleCount = Object.keys(imageClickCounts).length;
+        finalScoreElement.innerHTML = `本次已拍马屁人数: <span style="font-size: 1.5em; color: #f0ad4e; font-weight: bold;">${uniquePeopleCount}</span> 人`;
 
         if (finalWechatCountElement) {
             finalWechatCountElement.innerHTML = `🔓 可用道具: <span style="font-size: 1.3em;">${wechatItemCount}</span> 个`;
         }
 
-        // Generate People List
+        // Generate People List - Only show people that were clicked
         if (peopleListElement) {
             peopleListElement.innerHTML = '';
 
+            // Filter people who were clicked during the game
+            const clickedPeople = [];
             peopleData.forEach((person, index) => {
-                const card = document.createElement('div');
-                card.className = 'person-card' + (person.unlocked ? ' unlocked' : '');
-                card.id = `person-card-${index}`;
-
-                const maskedWechat = person.unlocked ? person.wechat : '********';
-                const wechatClass = person.unlocked ? 'visible-wechat' : 'hidden-wechat';
-
-                card.innerHTML = `
-                    <img src="${person.avatar}" class="person-avatar" alt="${person.name}">
-                    <div class="person-name">${person.name}</div>
-                    <div class="person-wechat ${wechatClass}" id="wechat-${index}">
-                        ${person.unlocked ? '' : '<span class="unlock-icon">🔒</span>'}
-                        ${maskedWechat}
-                    </div>
-                    ${person.unlocked ? `<button class="copy-btn" onclick="event.stopPropagation(); copyWechat('${person.wechat}')">📋 复制微信号</button>` : ''}
-                `;
-
-                // Add click handler for unlocking
-                if (!person.unlocked) {
-                    card.addEventListener('click', () => unlockPerson(index));
+                // Check if this person's avatar was clicked (match avatar URL with flashImages)
+                const avatarUrl = person.avatar;
+                if (imageClickCounts[avatarUrl] && imageClickCounts[avatarUrl] > 0) {
+                    clickedPeople.push({
+                        ...person,
+                        index: index,
+                        clickCount: imageClickCounts[avatarUrl]
+                    });
                 }
-
-                peopleListElement.appendChild(card);
             });
+
+            // If no one was clicked, show a hint
+            if (clickedPeople.length === 0) {
+                const noClickHint = document.createElement('div');
+                noClickHint.className = 'no-items-hint';
+                noClickHint.innerHTML = '😢 本轮没有拍到任何马屁<br>再来一次试试吧！';
+                peopleListElement.appendChild(noClickHint);
+            } else {
+                // Sort by click count (descending)
+                clickedPeople.sort((a, b) => b.clickCount - a.clickCount);
+
+                clickedPeople.forEach((person) => {
+                    const card = document.createElement('div');
+                    card.className = 'person-card' + (person.unlocked ? ' unlocked' : '');
+                    card.id = `person-card-${person.index}`;
+
+                    const maskedWechat = person.unlocked ? person.wechat : '********';
+                    const wechatClass = person.unlocked ? 'visible-wechat' : 'hidden-wechat';
+
+                    card.innerHTML = `
+                        <img src="${person.avatar}" class="person-avatar" alt="${person.name}">
+                        <div class="person-name">${person.name}</div>
+                        <div class="click-count">👋 拍了 <span style="color: #f0ad4e; font-weight: bold;">${person.clickCount}</span> 次</div>
+                        <div class="person-wechat ${wechatClass}" id="wechat-${person.index}">
+                            ${person.unlocked ? '' : '<span class="unlock-icon">🔒</span>'}
+                            ${maskedWechat}
+                        </div>
+                        ${person.unlocked ? `<button class="copy-btn" onclick="event.stopPropagation(); copyWechat('${person.wechat}')">📋 复制微信号</button>` : ''}
+                    `;
+
+                    // Add click handler for unlocking
+                    if (!person.unlocked) {
+                        card.addEventListener('click', () => unlockPerson(person.index));
+                    }
+
+                    peopleListElement.appendChild(card);
+                });
+            }
         }
 
         gameOverModal.classList.remove('hidden');
