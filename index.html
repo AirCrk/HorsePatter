@@ -9,6 +9,13 @@
 <body>
     <div class="prompt-container">
         <h1>拍马屁交友盲盒</h1>
+        <div class="timer-container">
+            <svg class="clock-svg" width="40" height="40" viewBox="0 0 40 40">
+                <circle class="clock-bg" cx="20" cy="20" r="18"></circle>
+                <circle class="clock-progress" cx="20" cy="20" r="18" transform="rotate(-90 20 20)"></circle>
+            </svg>
+            <span id="timer">60s</span>
+        </div>
         <p id="score">拍马屁次数: 0</p>
     </div>
     <div class="grassland" id="grassland">
@@ -23,6 +30,16 @@
             <h2>🧧 恭喜发财！</h2>
             <p>你拍到了白马的屁股！</p>
             <button id="claim-btn">领取红包</button>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>游戏结束!</h2>
+            <p id="final-score"></p>
+            <div id="leaderboard" class="leaderboard"></div>
+            <button id="restart-btn">再来一次</button>
         </div>
     </div>
 

@@ -21,8 +21,42 @@ body, html {
 }
 
 .prompt-container h1 {
-    margin: 0 0 10px 0;
+    margin: 0 0 5px 0;
     font-size: 24px;
+    color: #333;
+}
+
+.timer-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.clock-svg {
+    display: block;
+}
+
+.clock-bg {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 4;
+}
+
+.clock-progress {
+    fill: none;
+    stroke: #E91E63;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 113; /* 2 * PI * 18 ≈ 113 */
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear;
+}
+
+#timer {
+    font-size: 20px;
+    font-weight: bold;
     color: #333;
 }
 
@@ -101,10 +135,52 @@ body, html {
     padding: 30px;
     border-radius: 15px;
     text-align: center;
-    width: 300px;
+    width: 350px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     position: relative;
     border: 2px solid #f0ad4e;
+}
+
+.leaderboard {
+    margin: 15px 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.leaderboard-rank {
+    font-weight: bold;
+    font-size: 18px;
+    width: 30px;
+    color: #f0ad4e;
+}
+
+.leaderboard-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    border: 2px solid #fff;
+}
+
+.leaderboard-count {
+    font-size: 16px;
+    font-weight: bold;
+    flex-grow: 1;
+    text-align: right;
+    margin-right: 10px;
 }
 
 .modal-content h2 {

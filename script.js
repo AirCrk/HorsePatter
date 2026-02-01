@@ -5,7 +5,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const redPacketModal = document.getElementById('red-packet-modal');
     const closeBtn = document.querySelector('.close-btn');
     const claimBtn = document.getElementById('claim-btn');
+    const timerElement = document.getElementById('timer');
+    const clockProgress = document.querySelector('.clock-progress');
+    const gameOverModal = document.getElementById('game-over-modal');
+    const finalScoreElement = document.getElementById('final-score');
+    const restartBtn = document.getElementById('restart-btn');
+    
     let score = 0;
+    let imageClickCounts = {};
+    let timeLeft = 60;
+    let timerInterval;
+    let isGameOver = false;
+
+    function startTimer() {
+        // Reset timer
+        timeLeft = 60;
+        timerElement.textContent = `${timeLeft}s`;
+        if (clockProgress) {
+            clockProgress.style.strokeDashoffset = 0;
+        }
+        isGameOver = false;
+        
+        // Clear existing interval if any
+        if (timerInterval) clearInterval(timerInterval);
+        
+        const circumference = 113; // 2 * PI * 18
+        
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = `${timeLeft}s`;
+            
+            // Update clock progress
+            if (clockProgress) {
+                const offset = circumference - (timeLeft / 60) * circumference;
+                clockProgress.style.strokeDashoffset = offset;
+            }
+            
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }, 1000);
+    }
     
     const flashImages = [
         "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120631_275.jpg",
@@ -38,6 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (restartBtn) {
+        restartBtn.addEventListener('click', restartGame);
+    }
+
     // Close modal if clicking outside content
     window.addEventListener('click', (e) => {
         if (e.target === redPacketModal) {
@@ -64,6 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
     startWhiteHorseSpawner();
 
     function startWhiteHorseSpawner() {
+        if (isGameOver) return;
+
         // Random interval between 5 and 15 seconds
         const interval = 5000 + Math.random() * 10000;
         
@@ -243,6 +289,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function spawnWhiteHorse() {
+        if (isGameOver) return;
+
         const horse = document.createElement('div');
         horse.className = 'horse white-horse running-across';
         
@@ -541,6 +589,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showRandomImage(x, y) {
         const imgUrl = flashImages[Math.floor(Math.random() * flashImages.length)];
+        
+        // Track click count for this image
+        imageClickCounts[imgUrl] = (imageClickCounts[imgUrl] || 0) + 1;
+        
         const img = document.createElement('img');
         img.src = imgUrl;
         img.style.position = 'absolute';
@@ -608,4 +660,59 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 300);
         }, 1500);
     }
+
+    function endGame() {
+        clearInterval(timerInterval);
+        isGameOver = true;
+        
+        // Show game over modal
+        finalScoreElement.textContent = `最终得分: ${score}`;
+        
+        // Generate Leaderboard
+        const leaderboard = document.getElementById('leaderboard');
+        if (leaderboard) {
+            leaderboard.innerHTML = ''; // Clear previous
+            
+            // Convert counts to array and sort
+            const sortedImages = Object.entries(imageClickCounts)
+                .sort(([, countA], [, countB]) => countB - countA)
+                .slice(0, 5); // Top 5
+                
+            if (sortedImages.length === 0) {
+                leaderboard.innerHTML = '<div style="text-align:center; padding:10px;">暂无数据</div>';
+            } else {
+                sortedImages.forEach(([url, count], index) => {
+                    const item = document.createElement('div');
+                    item.className = 'leaderboard-item';
+                    item.innerHTML = `
+                        <span class="leaderboard-rank">#${index + 1}</span>
+                        <img src="${url}" class="leaderboard-img">
+                        <span class="leaderboard-count">${count}次</span>
+                    `;
+                    leaderboard.appendChild(item);
+                });
+            }
+        }
+        
+        gameOverModal.classList.remove('hidden');
+    }
+    
+    function restartGame() {
+        score = 0;
+        imageClickCounts = {};
+        scoreElement.textContent = `拍马屁次数: ${score}`;
+        gameOverModal.classList.add('hidden');
+        
+        // Remove all horses and recreate them
+        grassland.innerHTML = '';
+        for (let i = 0; i < numberOfHorses; i++) {
+            createHorse();
+        }
+        
+        // Restart timer
+        startTimer();
+    }
+
+    // Start timer on load
+    startTimer();
 });
