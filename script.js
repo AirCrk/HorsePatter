@@ -317,6 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wolfContent.style.width = '200px';
         wolfContent.style.height = 'auto';
         wolfContent.style.pointerEvents = 'none';
+        wolfContent.style.transform = 'scaleX(-1)'; // 翻转使其朝向左侧
         wolf.appendChild(wolfContent);
 
         // 点击区域
