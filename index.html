@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>拍马屁交友盲盒</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+    <!-- Countdown Overlay -->
+    <div id="countdown-overlay" class="countdown-overlay">
+        <div id="countdown-number" class="countdown-number">3</div>
+    </div>
+
     <div class="marquee-container">
         <div class="marquee-text">请点击马的屁股</div>
     </div>
@@ -21,7 +28,7 @@
         </div>
         <p id="score">拍马屁次数: 0</p>
     </div>
-    
+
     <!-- Top Right Item Count -->
     <div id="item-count-display" class="item-count-display">
         🔓 道具: 0
@@ -53,19 +60,27 @@
 
     <!-- Game Over Modal -->
     <div id="game-over-modal" class="modal hidden">
-        <div class="modal-content">
+        <div class="modal-content game-over-content">
             <span class="close-btn" id="game-over-close">&times;</span>
-            <h2>游戏结束!</h2>
+            <h2>🎉 游戏结束!</h2>
             <p id="final-score"></p>
             <p id="final-wechat-count" style="margin-top: 5px; font-weight: bold; color: #4CAF50;"></p>
-            <div id="leaderboard" class="leaderboard"></div>
+
+            <div class="unlock-hint">
+                <p>👇 点击下方人物头像解锁微信号（每个道具可解锁1位）</p>
+            </div>
+
+            <div id="people-list" class="people-list">
+                <!-- People cards will be added dynamically -->
+            </div>
+
             <div class="modal-buttons">
-                <button id="restart-btn">再来一次</button>
-                <button id="unlock-wechat-btn" style="background-color: #4CAF50;">解锁微信</button>
+                <button id="restart-btn">🔄 再来一次</button>
             </div>
         </div>
     </div>
 
     <script src="script.js"></script>
 </body>
+
 </html>

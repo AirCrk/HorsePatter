@@ -1,4 +1,66 @@
-body, html {
+/* Countdown Overlay */
+.countdown-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease-out;
+}
+
+.countdown-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.countdown-number {
+    font-size: 200px;
+    font-weight: bold;
+    color: #f0ad4e;
+    text-shadow:
+        0 0 20px rgba(240, 173, 78, 0.8),
+        0 0 40px rgba(240, 173, 78, 0.6),
+        0 0 60px rgba(240, 173, 78, 0.4);
+    animation: countdownPop 0.8s ease-out infinite;
+}
+
+.countdown-number.go {
+    font-size: 120px;
+    color: #4CAF50;
+    text-shadow:
+        0 0 20px rgba(76, 175, 80, 0.8),
+        0 0 40px rgba(76, 175, 80, 0.6),
+        0 0 60px rgba(76, 175, 80, 0.4);
+}
+
+@keyframes countdownPop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    20% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    40% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+body,
+html {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -15,7 +77,8 @@ body, html {
     height: 30px;
     background-color: rgba(0, 0, 0, 0.5);
     overflow: hidden;
-    z-index: 50; /* Ensure it's on top */
+    z-index: 50;
+    /* Ensure it's on top */
     color: #fff;
     display: flex;
     align-items: center;
@@ -27,24 +90,38 @@ body, html {
     animation: marquee 10s linear infinite;
     font-size: 16px;
     font-weight: bold;
-    color: #FFD700; /* Gold color for visibility */
+    color: #FFD700;
+    /* Gold color for visibility */
 }
 
 @keyframes marquee {
-    0% { left: 100%; }
-    100% { left: -100%; } /* Adjust depending on text length, or use transform: translateX */
+    0% {
+        left: 100%;
+    }
+
+    100% {
+        left: -100%;
+    }
+
+    /* Adjust depending on text length, or use transform: translateX */
 }
 
 /* Improve marquee animation for smoother continuous scroll if needed, 
    but basic left transition works for simple text */
 @keyframes marquee {
-    from { transform: translateX(100vw); }
-    to { transform: translateX(-100%); }
+    from {
+        transform: translateX(100vw);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
 }
 
 .prompt-container {
     position: absolute;
-    top: 40px; /* Moved down to make room for marquee */
+    top: 40px;
+    /* Moved down to make room for marquee */
     left: 50%;
     transform: translateX(-50%);
     background-color: rgba(255, 255, 255, 0.8);
@@ -58,15 +135,17 @@ body, html {
 
 .item-count-display {
     position: absolute;
-    top: 40px; /* Aligned with prompt container, below marquee */
+    top: 40px;
+    /* Aligned with prompt container, below marquee */
     right: 20px;
     background-color: rgba(255, 255, 255, 0.9);
     padding: 10px 15px;
     border-radius: 20px;
     font-size: 16px;
     font-weight: bold;
-    color: #4CAF50; /* Green for WeChat */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    color: #4CAF50;
+    /* Green for WeChat */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 20;
     border: 2px solid #4CAF50;
     transition: transform 0.2s;
@@ -105,7 +184,8 @@ body, html {
     stroke: #E91E63;
     stroke-width: 4;
     stroke-linecap: round;
-    stroke-dasharray: 113; /* 2 * PI * 18 ≈ 113 */
+    stroke-dasharray: 113;
+    /* 2 * PI * 18 ≈ 113 */
     stroke-dashoffset: 0;
     transition: stroke-dashoffset 1s linear;
 }
@@ -175,7 +255,7 @@ body, html {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -194,16 +274,18 @@ body, html {
     max-width: 80%;
     width: 300px;
     animation: popIn 0.3s ease-out;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .red-packet-content {
-    background-color: #d9534f; /* Red for Red Packet */
+    background-color: #d9534f;
+    /* Red for Red Packet */
     color: white;
 }
 
 .wechat-item-content {
-    background-color: #4CAF50; /* Green for WeChat */
+    background-color: #4CAF50;
+    /* Green for WeChat */
     color: white;
 }
 
@@ -275,7 +357,9 @@ body, html {
     margin-top: 20px;
 }
 
-.modal-buttons button, #claim-btn, #wechat-claim-btn {
+.modal-buttons button,
+#claim-btn,
+#wechat-claim-btn {
     padding: 10px 20px;
     font-size: 16px;
     border: none;
@@ -288,25 +372,53 @@ body, html {
     margin: 5px;
 }
 
-.modal-buttons button:hover, #claim-btn:hover, #wechat-claim-btn:hover {
+.modal-buttons button:hover,
+#claim-btn:hover,
+#wechat-claim-btn:hover {
     background-color: #ec971f;
 }
 
 @keyframes gallop {
-    0% { transform: translateX(0) translateY(0); }
-    10% { transform: translateX(-60px) translateY(-15px); }
-    20% { transform: translateX(-120px) translateY(0); }
-    30% { transform: translateX(-180px) translateY(-15px); }
-    40% { transform: translateX(-240px) translateY(0); }
-    50% { transform: translateX(-300px) translateY(-15px); }
-    60% { transform: translateX(-360px) translateY(0); }
-    100% { transform: translateX(-1500px) translateY(0); opacity: 0; }
+    0% {
+        transform: translateX(0) translateY(0);
+    }
+
+    10% {
+        transform: translateX(-60px) translateY(-15px);
+    }
+
+    20% {
+        transform: translateX(-120px) translateY(0);
+    }
+
+    30% {
+        transform: translateX(-180px) translateY(-15px);
+    }
+
+    40% {
+        transform: translateX(-240px) translateY(0);
+    }
+
+    50% {
+        transform: translateX(-300px) translateY(-15px);
+    }
+
+    60% {
+        transform: translateX(-360px) translateY(0);
+    }
+
+    100% {
+        transform: translateX(-1500px) translateY(0);
+        opacity: 0;
+    }
 }
 
 .running {
-    animation: gallop 1.5s ease-in forwards !important; /* Override default run */
+    animation: gallop 1.5s ease-in forwards !important;
+    /* Override default run */
     pointer-events: none;
-    z-index: 300 !important; /* Highest priority */
+    z-index: 300 !important;
+    /* Highest priority */
 }
 
 .white-horse {
@@ -315,26 +427,62 @@ body, html {
 }
 
 @keyframes runAcross {
-    0% { left: 110%; transform: translateY(0); }
-    10% { transform: translateY(-15px); }
-    20% { transform: translateY(0); }
-    30% { transform: translateY(-15px); }
-    40% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
-    60% { transform: translateY(0); }
-    70% { transform: translateY(-15px); }
-    80% { transform: translateY(0); }
-    90% { transform: translateY(-15px); }
-    100% { left: -20%; transform: translateY(0); }
+    0% {
+        left: 110%;
+        transform: translateY(0);
+    }
+
+    10% {
+        transform: translateY(-15px);
+    }
+
+    20% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-15px);
+    }
+
+    40% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    60% {
+        transform: translateY(0);
+    }
+
+    70% {
+        transform: translateY(-15px);
+    }
+
+    80% {
+        transform: translateY(0);
+    }
+
+    90% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        left: -20%;
+        transform: translateY(0);
+    }
 }
 
 /* Default horse animation */
 .horse {
-    animation: runAcross 15s linear infinite; /* Default animation */
+    animation: runAcross 15s linear infinite;
+    /* Default animation */
 }
 
 .running-across {
-    animation: runAcross 6s linear infinite; /* Faster than brown horses (8-20s) */
+    animation: runAcross 6s linear infinite;
+    /* Faster than brown horses (8-20s) */
 }
 
 /* Removed redundant .horse img style as .horse-content handles it */
@@ -354,20 +502,188 @@ body, html {
 
 /* If the GIF faces Right, and we run Right-to-Left, we need to flip it to face Left. */
 .horse-content {
-    width: 192px; /* 32px * 6 scale */
-    height: 144px; /* 24px * 6 scale */
+    width: 192px;
+    /* 32px * 6 scale */
+    height: 144px;
+    /* 24px * 6 scale */
     display: block;
-    transform: scaleX(-1); /* Face left */
-    image-rendering: pixelated; /* Ensure crisp pixel art */
-    
+    transform: scaleX(-1);
+    /* Face left */
+    image-rendering: pixelated;
+    /* Ensure crisp pixel art */
+
     /* Sprite Animation settings */
     background-repeat: no-repeat;
     /* 4 frames: width * 4 = 768px */
-    background-size: 768px 144px; 
+    background-size: 768px 144px;
     animation: horse-sprite-anim 0.6s steps(4) infinite;
 }
 
 @keyframes horse-sprite-anim {
-    from { background-position: 0px 0px; }
-    to { background-position: -768px 0px; }
+    from {
+        background-position: 0px 0px;
+    }
+
+    to {
+        background-position: -768px 0px;
+    }
+}
+
+/* Game Over Modal - Enhanced */
+.game-over-content {
+    width: 90%;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    color: white;
+}
+
+.game-over-content h2 {
+    color: #f0ad4e;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.unlock-hint {
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px dashed #4CAF50;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 15px 0;
+}
+
+.unlock-hint p {
+    color: #4CAF50;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* People List */
+.people-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 15px;
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Person Card */
+.person-card {
+    background: linear-gradient(145deg, #2d2d44, #252538);
+    border-radius: 15px;
+    padding: 15px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.person-card:hover {
+    transform: translateY(-5px);
+    border-color: #4CAF50;
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+}
+
+.person-card.unlocked {
+    border-color: #4CAF50;
+    background: linear-gradient(145deg, #1e4620, #162d18);
+}
+
+.person-card.unlocked::before {
+    content: '✓';
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    color: #4CAF50;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.person-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f0ad4e;
+    margin-bottom: 10px;
+    transition: transform 0.3s;
+}
+
+.person-card:hover .person-avatar {
+    transform: scale(1.1);
+}
+
+.person-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.person-wechat {
+    font-size: 12px;
+    color: #aaa;
+    word-break: break-all;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.person-wechat.hidden-wechat {
+    color: #888;
+    letter-spacing: 2px;
+}
+
+.person-wechat.visible-wechat {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.unlock-icon {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 3px;
+}
+
+/* Copy Button */
+.copy-btn {
+    margin-top: 8px;
+    padding: 5px 10px;
+    font-size: 11px;
+    background: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.copy-btn:hover {
+    background: #45a049;
+}
+
+/* Scrollbar for people list */
+.people-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.people-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.people-list::-webkit-scrollbar-thumb {
+    background: #4CAF50;
+    border-radius: 3px;
+}
+
+/* No Items Hint */
+.no-items-hint {
+    text-align: center;
+    color: #f0ad4e;
+    padding: 20px;
+    font-size: 14px;
 }

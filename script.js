@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Using specific IDs for close buttons now
     const redPacketCloseBtn = document.getElementById('red-packet-close');
     const claimBtn = document.getElementById('claim-btn');
-    
+
     const wechatItemModal = document.getElementById('wechat-item-modal');
     const wechatItemCloseBtn = document.getElementById('wechat-item-close');
     const wechatClaimBtn = document.getElementById('wechat-claim-btn');
@@ -19,9 +19,71 @@ document.addEventListener('DOMContentLoaded', () => {
     const finalScoreElement = document.getElementById('final-score');
     const finalWechatCountElement = document.getElementById('final-wechat-count');
     const restartBtn = document.getElementById('restart-btn');
-    const unlockWechatBtn = document.getElementById('unlock-wechat-btn');
     const gameOverCloseBtn = document.getElementById('game-over-close');
-    
+    const peopleListElement = document.getElementById('people-list');
+
+    // Countdown elements
+    const countdownOverlay = document.getElementById('countdown-overlay');
+    const countdownNumber = document.getElementById('countdown-number');
+
+    // People data - avatars, nicknames, and WeChat IDs
+    const peopleData = [
+        {
+            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120631_275.jpg",
+            name: "Test001",
+            wechat: "wexin001",
+            unlocked: false
+        },
+        {
+            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120621_958.jpg",
+            name: "Test002",
+            wechat: "Wexin002",
+            unlocked: false
+        },
+        {
+            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120615_128.jpg",
+            name: "Test003",
+            wechat: "Wexin003",
+            unlocked: false
+        },
+        {
+            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120604_222.jpg",
+            name: "Test004",
+            wechat: "Wexin004",
+            unlocked: false
+        },
+        {
+            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120557_022.jpg",
+            name: "Test005",
+            wechat: "Wexin005",
+            unlocked: false
+        },
+        {
+            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120549_145.jpg",
+            name: "Test006",
+            wechat: "Wexin006",
+            unlocked: false
+        },
+        {
+            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120540_995.jpg",
+            name: "Test007",
+            wechat: "Wexin007",
+            unlocked: false
+        },
+        {
+            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120525_410.jpg",
+            name: "Test008",
+            wechat: "Wexin008",
+            unlocked: false
+        },
+        {
+            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%A4%B4%E5%83%8F.jpg",
+            name: "test009",
+            wechat: "wexin009",
+            unlocked: false
+        }
+    ];
+
     let score = 0;
     let wechatItemCount = 0;
     let imageClickCounts = {};
@@ -39,42 +101,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         isGameOver = false;
         isPaused = false;
-        
+
         startTimerLoop();
     }
-    
+
     function startTimerLoop() {
         // Clear existing interval if any
         if (timerInterval) clearInterval(timerInterval);
-        
+
         const circumference = 113; // 2 * PI * 18
-        
+
         timerInterval = setInterval(() => {
             if (isPaused) return;
-            
+
             timeLeft--;
             timerElement.textContent = `${timeLeft}s`;
-            
+
             // Update clock progress
             if (clockProgress) {
                 const offset = circumference - (timeLeft / 60) * circumference;
                 clockProgress.style.strokeDashoffset = offset;
             }
-            
+
             if (timeLeft <= 0) {
                 endGame();
             }
         }, 1000);
     }
-    
+
     function pauseTimer() {
         isPaused = true;
     }
-    
+
     function resumeTimer() {
         isPaused = false;
     }
-    
+
     const flashImages = [
         "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120631_275.jpg",
         "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120621_958.jpg",
@@ -91,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (redPacketCloseBtn) {
         redPacketCloseBtn.addEventListener('click', hideRedPacketModal);
     }
-    
+
     if (wechatItemCloseBtn) {
         wechatItemCloseBtn.addEventListener('click', hideWechatItemModal);
     }
@@ -103,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
             score += 10;
             scoreElement.textContent = `拍马屁次数: ${score}`;
             showToast("红包领取成功！正在跳转...");
-            
+
             // Redirect to the red packet URL
             setTimeout(() => {
                 window.location.href = 'https://yb.tencent.com/fes/red/claim?signature=3984168b467169e0b7d40708890d8b92c1495c1579d6a533ecdde493645dba8c&red_packet_id=27002e9a8f4843f8a85a9700fccfece4&yb_use_wechat_download_page=1';
@@ -115,10 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (restartBtn) {
         restartBtn.addEventListener('click', restartGame);
-    }
-
-    if (unlockWechatBtn) {
-        unlockWechatBtn.addEventListener('click', handleUnlockWechat);
     }
 
     if (gameOverCloseBtn) {
@@ -150,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showWechatItemModal() {
         wechatItemModal.classList.remove('hidden');
         pauseTimer();
-        
+
         // Increment count immediately when found
         wechatItemCount++;
         score += 20; // Add score immediately since button is removed
@@ -173,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Create horses
     const numberOfHorses = 15;
-    
+
     for (let i = 0; i < numberOfHorses; i++) {
         createHorse();
     }
@@ -186,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Random interval between 5 and 15 seconds
         const interval = 5000 + Math.random() * 10000;
-        
+
         setTimeout(() => {
             // Only spawn if there isn't one already (or maybe allow a couple, but let's stick to 1 to avoid chaos)
             if (document.querySelectorAll('.white-horse').length === 0) {
@@ -338,10 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     // Add Eye detail if in head area
                     if (x === 24 && y === 4) { // Approximate eye position
-                         ctx.fillStyle = C.w;
-                         ctx.fillRect(offsetX + x, y, 1, 1);
-                         ctx.fillStyle = C.p;
-                         ctx.fillRect(offsetX + x + 1, y, 1, 1); // Pupil
+                        ctx.fillStyle = C.w;
+                        ctx.fillRect(offsetX + x, y, 1, 1);
+                        ctx.fillStyle = C.p;
+                        ctx.fillRect(offsetX + x + 1, y, 1, 1); // Pupil
                     }
                 }
             });
@@ -355,12 +413,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function getHorseContent(isFunny = false) {
         const horseContent = document.createElement('div');
         horseContent.className = 'horse-content';
-        
+
         if (isFunny) {
             // Use the GIF provided by the user
             const gifUrl = "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E9%A9%AC.gif";
             horseContent.style.backgroundImage = `url('${gifUrl}')`;
-            
+
             // Override sprite animation styles for GIF
             horseContent.style.backgroundSize = 'contain';
             horseContent.style.backgroundPosition = 'center';
@@ -370,14 +428,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // White horse GIF
             const gifUrl = "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E7%99%BD%E9%A9%AC.gif";
             horseContent.style.backgroundImage = `url('${gifUrl}')`;
-            
+
             // Override sprite animation styles for GIF
             horseContent.style.backgroundSize = 'contain';
             horseContent.style.backgroundPosition = 'center';
             horseContent.style.animation = 'none'; // Disable sprite animation
             horseContent.style.transform = 'scaleX(1)'; // Assume same direction as brown horse GIF
         }
-        
+
         return horseContent;
     }
 
@@ -386,53 +444,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const horse = document.createElement('div');
         horse.className = 'horse white-horse running-across';
-        
+
         // Random vertical position (perspective)
         const minTop = 35;
         const maxTop = 85;
         const top = minTop + Math.random() * (maxTop - minTop);
-        
+
         horse.style.top = `${top}%`;
         // Initial left is handled by CSS animation (starts at 110%)
-        horse.style.left = '110%'; 
-        
+        horse.style.left = '110%';
+
         horse.style.zIndex = Math.floor(top * 10) + 50; // Ensure it's visible but respects depth
-        
+
         const horseContent = getHorseContent(false); // Normal for white horse
         horse.appendChild(horseContent);
-        
+
         // Butt interaction area for White Horse
         const butt = document.createElement('div');
         butt.className = 'butt-area';
         butt.title = '点击领取红包';
-        
+
         let hasBeenClicked = false; // Track if this horse has been clicked
-        
+
         butt.addEventListener('click', (e) => {
             e.stopPropagation();
-            
+
             if (hasBeenClicked) {
                 showToast("这匹马已经被拍过了！");
                 return;
             }
-            
+
             hasBeenClicked = true;
             butt.style.cursor = 'default'; // Visual feedback
-            
+
             playCoinSound();
             showRandomImage(e.clientX, e.clientY);
-            
+
             // Randomly trigger either Red Packet or WeChat Item
             if (Math.random() < 0.5) {
                 showRedPacketModal();
             } else {
                 showWechatItemModal();
             }
-            
+
             // Optional: Also make it run away or disappear?
             // For now, just show modal. It continues its running-across animation.
         });
-        
+
         // Reset click status when horse reappears (animation loops)
         horse.addEventListener('animationiteration', () => {
             hasBeenClicked = false;
@@ -440,9 +498,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         horse.appendChild(butt);
-        
+
         grassland.appendChild(horse);
-        
+
         // Remove after animation completes (4s + buffer)
         // REMOVED auto-deletion so it loops infinitely
         /*
@@ -465,41 +523,41 @@ document.addEventListener('DOMContentLoaded', () => {
     function createHorse() {
         const horse = document.createElement('div');
         horse.className = 'horse';
-        
+
         // Random position on the grass
         const minTop = 35;
         const maxTop = 85;
         const top = minTop + Math.random() * (maxTop - minTop);
-        
+
         // Random speed (duration) between 8s and 20s
         const duration = 8 + Math.random() * 12;
-        
+
         // Random start position (negative delay) so they are spread out
         const delay = -Math.random() * duration;
-        
+
         horse.style.top = `${top}%`;
         horse.style.zIndex = Math.floor(top * 10);
-        
+
         // Apply random animation properties
         horse.style.animationDuration = `${duration}s`;
         horse.style.animationDelay = `${delay}s`;
-        
+
         // Use GIF instead of emoji
         const horseContent = getHorseContent(true); // Funny for brown horse
         horse.appendChild(horseContent);
 
-        
+
         // Butt interaction area
         const butt = document.createElement('div');
         butt.className = 'butt-area';
         butt.title = '点击拍马屁';
-        
+
         butt.addEventListener('click', (e) => {
             e.stopPropagation(); // Prevent bubbling if necessary
             patButt(e.clientX, e.clientY);
             runAway(horse);
         });
-        
+
         horse.appendChild(butt);
         grassland.appendChild(horse);
     }
@@ -507,10 +565,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function runAway(horse) {
         // Play the specific running sound
         playRunningSound();
-        
+
         // Add running class
         horse.classList.add('running');
-        
+
         // Remove after animation and create a new one
         setTimeout(() => {
             if (horse.parentNode) {
@@ -519,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Respawn a new horse to maintain population
             setTimeout(() => {
                 createHorse();
-            }, 500); 
+            }, 500);
         }, 1500); // Matches animation duration
     }
 
@@ -542,7 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const t = audioCtx.currentTime;
-        
+
         // Noise buffer for "slap" texture
         const bufferSize = audioCtx.sampleRate * 0.1; // 0.1 seconds
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -567,7 +625,7 @@ document.addEventListener('DOMContentLoaded', () => {
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(audioCtx.destination);
-        
+
         noise.start(t);
         noise.stop(t + 0.1);
     }
@@ -581,7 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Carrier oscillator (the main pitch)
         const osc = audioCtx.createOscillator();
         osc.type = 'sawtooth';
-        
+
         // Pitch envelope: start high, drop down
         osc.frequency.setValueAtTime(1200, t);
         osc.frequency.exponentialRampToValueAtTime(600, t + 0.8);
@@ -589,19 +647,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // LFO for vibrato (the "neigh" wobble)
         const lfo = audioCtx.createOscillator();
         lfo.frequency.value = 10; // 10 Hz wobble
-        
+
         const lfoGain = audioCtx.createGain();
         lfoGain.gain.value = 100; // Modulation depth
-        
+
         lfo.connect(lfoGain);
         lfoGain.connect(osc.frequency);
-        
+
         // Gain envelope (volume)
         const gain = audioCtx.createGain();
         gain.gain.setValueAtTime(0, t);
         gain.gain.linearRampToValueAtTime(0.3, t + 0.1);
         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
-        
+
         // Filter to soften the sawtooth
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
@@ -610,7 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
         osc.connect(filter);
         filter.connect(gain);
         gain.connect(audioCtx.destination);
-        
+
         osc.start(t);
         lfo.start(t);
         osc.stop(t + 0.8);
@@ -636,28 +694,28 @@ document.addEventListener('DOMContentLoaded', () => {
         // Schedule triplets: 1-2-3... 1-2-3...
         // Rhythm pattern: beat, beat, beat, pause
         for (let time = 0; time < duration; time += 0.4) {
-             scheduleHoofBeat(t + time, buffer);
-             scheduleHoofBeat(t + time + 0.1, buffer);
-             scheduleHoofBeat(t + time + 0.2, buffer);
+            scheduleHoofBeat(t + time, buffer);
+            scheduleHoofBeat(t + time + 0.1, buffer);
+            scheduleHoofBeat(t + time + 0.2, buffer);
         }
     }
 
     function scheduleHoofBeat(time, buffer) {
         const source = audioCtx.createBufferSource();
         source.buffer = buffer;
-        
+
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
         filter.frequency.value = 600; // Muffled thud
-        
+
         const gain = audioCtx.createGain();
         gain.gain.setValueAtTime(0.5, time);
         gain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
-        
+
         source.connect(filter);
         filter.connect(gain);
         gain.connect(audioCtx.destination);
-        
+
         source.start(time);
         source.stop(time + 0.05);
     }
@@ -665,25 +723,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function patButt(x, y) {
         score++;
         scoreElement.textContent = `拍马屁次数: ${score}`;
-        
+
         // Show visual feedback at click location
         showFeedback(x, y);
-        
+
         // Show random flashing image
         showRandomImage(x, y);
-        
+
         // Show toast
         showToast();
-        
+
         // Play sound effect
         playRandomSound();
     }
-    
+
     function playRandomSound() {
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
-        
+
         const randomSound = soundEffects[Math.floor(Math.random() * soundEffects.length)];
         const audio = new Audio(randomSound);
         audio.play().catch(e => console.error("Error playing sound:", e));
@@ -702,7 +760,7 @@ document.addEventListener('DOMContentLoaded', () => {
         feedback.style.textShadow = '2px 2px 4px #000';
         feedback.style.zIndex = '1000';
         feedback.style.animation = 'floatUp 1s ease-out forwards';
-        
+
         // Add animation keyframes dynamically if not present
         if (!document.getElementById('feedback-style')) {
             const style = document.createElement('style');
@@ -715,9 +773,9 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             document.head.appendChild(style);
         }
-        
+
         document.body.appendChild(feedback);
-        
+
         setTimeout(() => {
             feedback.remove();
         }, 1000);
@@ -725,10 +783,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showRandomImage(x, y) {
         const imgUrl = flashImages[Math.floor(Math.random() * flashImages.length)];
-        
+
         // Track click count for this image
         imageClickCounts[imgUrl] = (imageClickCounts[imgUrl] || 0) + 1;
-        
+
         const img = document.createElement('img');
         img.src = imgUrl;
         img.style.position = 'absolute';
@@ -742,9 +800,9 @@ document.addEventListener('DOMContentLoaded', () => {
         img.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
         img.style.zIndex = '1001';
         img.style.pointerEvents = 'none';
-        
+
         img.style.animation = 'flashImage 1.5s ease-out forwards';
-        
+
         if (!document.getElementById('flash-image-style')) {
             const style = document.createElement('style');
             style.id = 'flash-image-style';
@@ -759,20 +817,20 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             document.head.appendChild(style);
         }
-        
+
         document.body.appendChild(img);
-        
+
         setTimeout(() => {
             img.remove();
         }, 1500);
     }
-    
+
     function showToast(message = null) {
         toast.classList.remove('hidden');
         // Force reflow
-        void toast.offsetWidth; 
+        void toast.offsetWidth;
         toast.classList.add('show');
-        
+
         if (message) {
             toast.textContent = message;
         } else {
@@ -788,7 +846,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ];
             toast.textContent = compliments[Math.floor(Math.random() * compliments.length)];
         }
-        
+
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => {
@@ -800,78 +858,140 @@ document.addEventListener('DOMContentLoaded', () => {
     function endGame() {
         clearInterval(timerInterval);
         isGameOver = true;
-        
+
         // Show game over modal
         finalScoreElement.innerHTML = `本次总计拍马屁: <span style="font-size: 1.5em; color: #f0ad4e; font-weight: bold;">${score}</span> 次`;
-        
+
         if (finalWechatCountElement) {
-            finalWechatCountElement.innerHTML = `🔓 获得解锁道具: <span style="font-size: 1.3em;">${wechatItemCount}</span> 个`;
+            finalWechatCountElement.innerHTML = `🔓 可用道具: <span style="font-size: 1.3em;">${wechatItemCount}</span> 个`;
         }
 
-        // Update unlock button text
-        if (unlockWechatBtn) {
-            unlockWechatBtn.textContent = '解锁微信';
+        // Generate People List
+        if (peopleListElement) {
+            peopleListElement.innerHTML = '';
+
+            peopleData.forEach((person, index) => {
+                const card = document.createElement('div');
+                card.className = 'person-card' + (person.unlocked ? ' unlocked' : '');
+                card.id = `person-card-${index}`;
+
+                const maskedWechat = person.unlocked ? person.wechat : '********';
+                const wechatClass = person.unlocked ? 'visible-wechat' : 'hidden-wechat';
+
+                card.innerHTML = `
+                    <img src="${person.avatar}" class="person-avatar" alt="${person.name}">
+                    <div class="person-name">${person.name}</div>
+                    <div class="person-wechat ${wechatClass}" id="wechat-${index}">
+                        ${person.unlocked ? '' : '<span class="unlock-icon">🔒</span>'}
+                        ${maskedWechat}
+                    </div>
+                    ${person.unlocked ? `<button class="copy-btn" onclick="event.stopPropagation(); copyWechat('${person.wechat}')">📋 复制微信号</button>` : ''}
+                `;
+
+                // Add click handler for unlocking
+                if (!person.unlocked) {
+                    card.addEventListener('click', () => unlockPerson(index));
+                }
+
+                peopleListElement.appendChild(card);
+            });
         }
-        
-        // Generate Leaderboard
-        const leaderboard = document.getElementById('leaderboard');
-        if (leaderboard) {
-            leaderboard.innerHTML = '<p style="margin: 10px 0; font-size: 0.9em; color: #666;">--- 拍得最响的部位 ---</p>'; // Header
-            
-            // Convert counts to array and sort
-            const sortedImages = Object.entries(imageClickCounts)
-                .sort(([, countA], [, countB]) => countB - countA)
-                .slice(0, 5); // Top 5
-                
-            if (sortedImages.length === 0) {
-                leaderboard.innerHTML = '<div style="text-align:center; padding:10px;">暂无数据</div>';
-            } else {
-                sortedImages.forEach(([url, count], index) => {
-                    const item = document.createElement('div');
-                    item.className = 'leaderboard-item';
-                    item.innerHTML = `
-                        <span class="leaderboard-rank">#${index + 1}</span>
-                        <img src="${url}" class="leaderboard-img">
-                        <span class="leaderboard-count">${count}次</span>
-                    `;
-                    leaderboard.appendChild(item);
-                });
-            }
-        }
-        
+
         gameOverModal.classList.remove('hidden');
     }
-    
+
+    // Function to unlock a person's WeChat
+    function unlockPerson(index) {
+        if (wechatItemCount <= 0) {
+            showToast('道具不足！继续游戏获取更多道具吧~');
+            return;
+        }
+
+        if (peopleData[index].unlocked) {
+            showToast('该微信号已解锁！');
+            return;
+        }
+
+        // Consume one item
+        wechatItemCount--;
+        peopleData[index].unlocked = true;
+
+        // Update item count display
+        if (itemCountElement) {
+            itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+        }
+
+        // Update the final wechat count display in modal
+        if (finalWechatCountElement) {
+            finalWechatCountElement.innerHTML = `🔓 可用道具: <span style="font-size: 1.3em;">${wechatItemCount}</span> 个`;
+        }
+
+        // Update the card UI
+        const card = document.getElementById(`person-card-${index}`);
+        const wechatDiv = document.getElementById(`wechat-${index}`);
+
+        if (card && wechatDiv) {
+            card.classList.add('unlocked');
+            wechatDiv.className = 'person-wechat visible-wechat';
+            wechatDiv.innerHTML = peopleData[index].wechat;
+
+            // Add copy button
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.textContent = '📋 复制微信号';
+            copyBtn.onclick = (e) => {
+                e.stopPropagation();
+                copyWechat(peopleData[index].wechat);
+            };
+            card.appendChild(copyBtn);
+
+            // Remove click handler
+            card.style.cursor = 'default';
+            card.onclick = null;
+        }
+
+        showToast(`🎉 解锁成功！微信号: ${peopleData[index].wechat}`);
+        playCoinSound();
+    }
+
+    // Global function for copying WeChat ID
+    window.copyWechat = function (wechatId) {
+        copyToClipboard(wechatId, `微信号已复制: ${wechatId}`);
+    };
+
     function restartGame() {
         score = 0;
         wechatItemCount = 0;
         imageClickCounts = {};
         scoreElement.textContent = `拍马屁次数: ${score}`;
-        
+
         // Reset item count display
         if (itemCountElement) {
             itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
         }
-        
+
+        // Reset people unlock status
+        resetPeopleData();
+
         gameOverModal.classList.add('hidden');
-        
+
         // Remove all horses and recreate them
         grassland.innerHTML = '';
         for (let i = 0; i < numberOfHorses; i++) {
             createHorse();
         }
-        
-        // Restart timer
-        startTimer();
+
+        // Restart with countdown
+        showCountdown(() => {
+            startTimer();
+        });
     }
 
-    async function handleUnlockWechat() {
-        if (wechatItemCount > 0) {
-            const wechatId = "yanyubao123"; // Placeholder ID
-            copyToClipboard(wechatId, "微信号已复制: " + wechatId);
-        } else {
-            showToast("你还没有获得解锁道具哦！");
-        }
+    // Reset people data when restarting
+    function resetPeopleData() {
+        peopleData.forEach(person => {
+            person.unlocked = false;
+        });
     }
 
     function copyToClipboard(text, successMessage) {
@@ -883,6 +1003,78 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Start timer on load
-    startTimer();
+    // Countdown function - shows 3, 2, 1, GO! before starting the game
+    function showCountdown(callback) {
+        const countdownSequence = ['3', '2', '1', '开始!'];
+        let index = 0;
+
+        // Show overlay
+        countdownOverlay.classList.remove('hidden');
+        countdownNumber.classList.remove('go');
+        countdownNumber.textContent = countdownSequence[0];
+
+        const countdownInterval = setInterval(() => {
+            index++;
+
+            if (index < countdownSequence.length) {
+                countdownNumber.textContent = countdownSequence[index];
+
+                // Add special styling for "开始!"
+                if (countdownSequence[index] === '开始!') {
+                    countdownNumber.classList.add('go');
+                }
+
+                // Play tick sound
+                playCountdownSound(index);
+            } else {
+                // Countdown finished
+                clearInterval(countdownInterval);
+
+                // Hide overlay with fade
+                countdownOverlay.classList.add('hidden');
+
+                // Start the actual game
+                if (callback) callback();
+            }
+        }, 1000);
+
+        // Play first tick sound
+        playCountdownSound(0);
+    }
+
+    // Sound for countdown
+    function playCountdownSound(step) {
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        const t = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        if (step === 3) {
+            // "GO" sound - higher pitch, longer
+            osc.frequency.value = 880;
+            gain.gain.setValueAtTime(0.3, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(t);
+            osc.stop(t + 0.3);
+        } else {
+            // Tick sound
+            osc.frequency.value = 440;
+            gain.gain.setValueAtTime(0.2, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(t);
+            osc.stop(t + 0.15);
+        }
+    }
+
+    // Start game with countdown on load
+    showCountdown(() => {
+        startTimer();
+    });
 });
