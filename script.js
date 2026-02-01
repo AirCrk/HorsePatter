@@ -6,6 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.querySelector('.close-btn');
     const claimBtn = document.getElementById('claim-btn');
     let score = 0;
+    
+    const flashImages = [
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120631_275.jpg",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120621_958.jpg",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120615_128.jpg",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120604_222.jpg",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120557_022.jpg",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120549_145.jpg",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120540_995.jpg",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120525_410.jpg"
+    ];
 
     // Modal Event Listeners
     if (closeBtn) {
@@ -56,8 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const interval = 5000 + Math.random() * 10000;
         
         setTimeout(() => {
-            spawnWhiteHorse();
-            startWhiteHorseSpawner(); // Schedule next spawn
+            // Only spawn if there isn't one already (or maybe allow a couple, but let's stick to 1 to avoid chaos)
+            if (document.querySelectorAll('.white-horse').length === 0) {
+                spawnWhiteHorse();
+            }
+            startWhiteHorseSpawner(); // Schedule next spawn check
         }, interval);
     }
 
@@ -252,6 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         butt.addEventListener('click', (e) => {
             e.stopPropagation();
+            showRandomImage(e.clientX, e.clientY);
             showRedPacketModal();
             // Optional: Also make it run away or disappear?
             // For now, just show modal. It continues its running-across animation.
@@ -262,11 +277,14 @@ document.addEventListener('DOMContentLoaded', () => {
         grassland.appendChild(horse);
         
         // Remove after animation completes (4s + buffer)
+        // REMOVED auto-deletion so it loops infinitely
+        /*
         setTimeout(() => {
             if (horse.parentNode) {
                 horse.parentNode.removeChild(horse);
             }
         }, 4500);
+        */
     }
 
     function createHorse() {
@@ -470,6 +488,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show visual feedback at click location
         showFeedback(x, y);
         
+        // Show random flashing image
+        showRandomImage(x, y);
+        
         // Show toast
         showToast();
         
@@ -509,6 +530,46 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             feedback.remove();
         }, 1000);
+    }
+
+    function showRandomImage(x, y) {
+        const imgUrl = flashImages[Math.floor(Math.random() * flashImages.length)];
+        const img = document.createElement('img');
+        img.src = imgUrl;
+        img.style.position = 'absolute';
+        img.style.left = `${x - 40}px`; // Center horizontally (80px width)
+        img.style.top = `${y - 120}px`; // Above the click
+        img.style.width = '80px';
+        img.style.height = '80px';
+        img.style.borderRadius = '50%';
+        img.style.objectFit = 'cover';
+        img.style.border = '2px solid #FFF';
+        img.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
+        img.style.zIndex = '1001';
+        img.style.pointerEvents = 'none';
+        
+        img.style.animation = 'flashImage 1.5s ease-out forwards';
+        
+        if (!document.getElementById('flash-image-style')) {
+            const style = document.createElement('style');
+            style.id = 'flash-image-style';
+            style.textContent = `
+                @keyframes flashImage {
+                    0% { transform: scale(0) translateY(0); opacity: 0; }
+                    20% { transform: scale(1.2) translateY(-20px); opacity: 1; }
+                    40% { transform: scale(1) translateY(-25px); opacity: 1; }
+                    80% { opacity: 1; }
+                    100% { transform: scale(1) translateY(-60px); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(img);
+        
+        setTimeout(() => {
+            img.remove();
+        }, 1500);
     }
     
     function showToast(message = null) {
