@@ -314,10 +314,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const wolfContent = document.createElement('img');
         wolfContent.src = 'https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%9D%A6%E5%85%8B.gif';
         wolfContent.alt = '狼总（侠狼）';
-        wolfContent.style.width = '120px';
+        wolfContent.style.width = '200px';
         wolfContent.style.height = 'auto';
         wolfContent.style.pointerEvents = 'none';
-        wolfContent.style.transform = 'scaleX(-1)'; // 翻转方向
         wolf.appendChild(wolfContent);
 
         // 点击区域
