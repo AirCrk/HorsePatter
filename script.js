@@ -95,6 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;
     let isGameOver = false;
     let isPaused = false;
+    let wolfHasSpawned = false; // 狼总每场游戏只出现一次
+    let wolfSpawnTimeout = null;
 
     function startTimer() {
         // Reset timer
@@ -107,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isPaused = false;
 
         startTimerLoop();
+        startWolfSpawner(); // 启动狼总生成器
     }
 
     function startTimerLoop() {
@@ -271,6 +274,94 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             startWhiteHorseSpawner(); // Schedule next spawn check
         }, interval);
+    }
+
+    // 狼总角色 - 每场游戏只出现一次
+    function startWolfSpawner() {
+        if (isGameOver || wolfHasSpawned) return;
+
+        // 在游戏进行到 10-50 秒之间的某个随机时刻出现
+        const spawnDelay = 10000 + Math.random() * 40000;
+
+        wolfSpawnTimeout = setTimeout(() => {
+            if (!isGameOver && !wolfHasSpawned) {
+                spawnWolf();
+                wolfHasSpawned = true;
+            }
+        }, spawnDelay);
+    }
+
+    function spawnWolf() {
+        if (isGameOver) return;
+
+        const wolf = document.createElement('div');
+        wolf.className = 'horse wolf-character running-across';
+
+        // Random vertical position (perspective)
+        const minTop = 35;
+        const maxTop = 85;
+        const top = minTop + Math.random() * (maxTop - minTop);
+
+        wolf.style.top = `${top}%`;
+        wolf.style.left = '110%';
+        wolf.style.zIndex = Math.floor(top * 10) + 100; // 确保狼总在最上层
+
+        // 使用狼总的GIF图片
+        const wolfContent = document.createElement('img');
+        wolfContent.src = 'https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%9D%A6%E5%85%8B.gif';
+        wolfContent.alt = '狼总（侠狼）';
+        wolfContent.style.width = '120px';
+        wolfContent.style.height = 'auto';
+        wolfContent.style.pointerEvents = 'none';
+        wolfContent.style.transform = 'scaleX(-1)'; // 翻转方向
+        wolf.appendChild(wolfContent);
+
+        // 点击区域
+        const butt = document.createElement('div');
+        butt.className = 'butt-area wolf-butt';
+        butt.title = '点击狼总获取超级奖励！';
+
+        let hasBeenClicked = false;
+
+        butt.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            if (hasBeenClicked) {
+                showToast("狼总已经被拍过了！");
+                return;
+            }
+
+            hasBeenClicked = true;
+            butt.style.cursor = 'default';
+
+            // 播放金币音效
+            playCoinSound();
+            showRandomImage(e.clientX, e.clientY);
+
+            // 狼总专属奖励 - 给予3个道具
+            wechatItemCount += 3;
+            if (itemCountElement) {
+                itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+            }
+
+            // 显示特殊提示
+            showToast("🐺 狼总降临！获得3个解锁道具！");
+
+            // 同时触发红包和道具奖励
+            setTimeout(() => {
+                showWechatItemModal();
+            }, 500);
+        });
+
+        wolf.appendChild(butt);
+        grassland.appendChild(wolf);
+
+        // 狼总穿过屏幕后移除（4秒后）
+        setTimeout(() => {
+            if (wolf.parentNode) {
+                wolf.parentNode.removeChild(wolf);
+            }
+        }, 4500);
     }
 
     function generateNormalHorse() {
@@ -1020,6 +1111,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Reset people unlock status
         resetPeopleData();
+
+        // Reset wolf spawn status
+        wolfHasSpawned = false;
+        if (wolfSpawnTimeout) {
+            clearTimeout(wolfSpawnTimeout);
+            wolfSpawnTimeout = null;
+        }
 
         gameOverModal.classList.add('hidden');
 

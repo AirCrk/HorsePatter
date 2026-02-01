@@ -427,6 +427,33 @@ html {
     z-index: 200 !important;
 }
 
+/* 狼总角色样式 */
+.wolf-character {
+    z-index: 250 !important;
+}
+
+.wolf-character img {
+    filter: drop-shadow(0 0 10px gold) drop-shadow(0 0 20px orange);
+    animation: wolfGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes wolfGlow {
+    0% {
+        filter: drop-shadow(0 0 10px gold) drop-shadow(0 0 20px orange);
+    }
+
+    100% {
+        filter: drop-shadow(0 0 20px gold) drop-shadow(0 0 35px orange);
+    }
+}
+
+.wolf-butt {
+    width: 80px !important;
+    height: 80px !important;
+    right: 5% !important;
+    bottom: 20% !important;
+}
+
 @keyframes runAcross {
     0% {
         left: 110%;
