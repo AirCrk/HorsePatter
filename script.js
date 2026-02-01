@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         wolf.style.top = `${top}%`;
         wolf.style.left = '110%';
-        wolf.style.zIndex = Math.floor(top * 10) + 100; // 确保狼总在最上层
+        wolf.style.zIndex = 9999; // 确保狼总在最顶层，不被其他角色遮挡
 
         // 使用狼总的GIF图片
         const wolfContent = document.createElement('img');
@@ -466,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         motor.style.top = `${top}%`;
         motor.style.left = '110%';
-        motor.style.zIndex = Math.floor(top * 10) + 100; // 确保摩托在最上层
+        motor.style.zIndex = 9999; // 确保摩托在最顶层，不被其他角色遮挡
 
         // 使用摩托的GIF图片
         const motorContent = document.createElement('img');
