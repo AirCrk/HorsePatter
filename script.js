@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
         "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120557_022.jpg",
         "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120549_145.jpg",
         "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120540_995.jpg",
-        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120525_410.jpg"
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120525_410.jpg",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%A4%B4%E5%83%8F.jpg"
     ];
 
     // Modal Event Listeners
