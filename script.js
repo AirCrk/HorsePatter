@@ -10,55 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameOverModal = document.getElementById('game-over-modal');
     const finalScoreElement = document.getElementById('final-score');
     const restartBtn = document.getElementById('restart-btn');
-    
-    // Background Music Control
-    const bgMusic = document.getElementById('bg-music');
-    const musicBtn = document.getElementById('music-toggle');
-    let isMusicPlaying = false;
-
-    // Set initial volume
-    if (bgMusic) {
-        bgMusic.volume = 0.5;
-    }
-
-    function toggleMusic() {
-        if (!bgMusic) return;
-        
-        if (bgMusic.paused) {
-            bgMusic.play().then(() => {
-                isMusicPlaying = true;
-                musicBtn.textContent = '🎵';
-                musicBtn.classList.remove('muted');
-            }).catch(e => console.error("Music play failed:", e));
-        } else {
-            bgMusic.pause();
-            isMusicPlaying = false;
-            musicBtn.textContent = '🔇';
-            musicBtn.classList.add('muted');
-        }
-    }
-
-    if (musicBtn) {
-        musicBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent triggering game start if we add click-to-start later
-            toggleMusic();
-        });
-    }
-
-    // Try to auto-play on first interaction
-    document.body.addEventListener('click', function startMusicOnInteraction() {
-        if (bgMusic && bgMusic.paused && !isMusicPlaying) {
-             bgMusic.play().then(() => {
-                isMusicPlaying = true;
-                if (musicBtn) {
-                    musicBtn.textContent = '🎵';
-                    musicBtn.classList.remove('muted');
-                }
-            }).catch(() => {
-                // Autoplay might still be blocked or failed
-            });
-        }
-    }, { once: true });
+    const shareBtn = document.getElementById('share-btn');
+    const gameOverCloseBtn = document.getElementById('game-over-close');
     
     let score = 0;
     let imageClickCounts = {};
@@ -129,6 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (restartBtn) {
         restartBtn.addEventListener('click', restartGame);
+    }
+
+    if (shareBtn) {
+        shareBtn.addEventListener('click', handleShare);
+    }
+
+    if (gameOverCloseBtn) {
+        gameOverCloseBtn.addEventListener('click', () => {
+            gameOverModal.classList.add('hidden');
+        });
     }
 
     // Close modal if clicking outside content
@@ -715,7 +678,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isGameOver = true;
         
         // Show game over modal
-        finalScoreElement.textContent = `最终得分: ${score}`;
+        finalScoreElement.textContent = `以下是您拍马屁的次数排行：`;
         
         // Generate Leaderboard
         const leaderboard = document.getElementById('leaderboard');
@@ -760,6 +723,47 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Restart timer
         startTimer();
+    }
+
+    async function handleShare() {
+        // Get top patted person
+        const sortedImages = Object.entries(imageClickCounts)
+            .sort(([, countA], [, countB]) => countB - countA);
+        
+        let shareText = `我在《拍马屁交友盲盒》中拍了${score}次马屁！`;
+        if (sortedImages.length > 0) {
+            shareText += `最受我青睐的是第1名，被我拍了${sortedImages[0][1]}次！`;
+        }
+        shareText += ` 快来试试你的手速吧！ ${window.location.href}`;
+
+        // Try Web Share API first
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: '拍马屁交友盲盒',
+                    text: shareText,
+                    url: window.location.href
+                });
+                showToast("分享成功！");
+            } catch (err) {
+                // If user cancels or error, fallback to clipboard if not AbortError
+                if (err.name !== 'AbortError') {
+                    copyToClipboard(shareText);
+                }
+            }
+        } else {
+            // Fallback to clipboard
+            copyToClipboard(shareText);
+        }
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("战绩已复制到剪贴板！");
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+            showToast("复制失败，请截图分享");
+        });
     }
 
     // Start timer on load
