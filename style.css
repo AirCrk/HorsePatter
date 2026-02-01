@@ -945,3 +945,36 @@ html {
         opacity: 1;
     }
 }
+
+/* 手机端响应式样式 */
+@media screen and (max-width: 768px) {
+
+    /* 将右上角统计移到时钟下方中央 */
+    .top-right-stats {
+        position: absolute;
+        top: 140px;
+        /* 时钟下方 */
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+        flex-direction: row;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .score-display,
+    .item-count-display {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    /* 调整时钟位置 */
+    .digital-timer {
+        top: 50px;
+        padding: 12px 30px;
+    }
+
+    .digital-timer #timer {
+        font-size: 40px;
+    }
+}
