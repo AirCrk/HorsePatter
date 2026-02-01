@@ -2,18 +2,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const grassland = document.getElementById('grassland');
     const scoreElement = document.getElementById('score');
     const toast = document.getElementById('toast');
+    // Modals
     const redPacketModal = document.getElementById('red-packet-modal');
-    const closeBtn = document.querySelector('.close-btn');
+    // Using specific IDs for close buttons now
+    const redPacketCloseBtn = document.getElementById('red-packet-close');
     const claimBtn = document.getElementById('claim-btn');
+    
+    const wechatItemModal = document.getElementById('wechat-item-modal');
+    const wechatItemCloseBtn = document.getElementById('wechat-item-close');
+    const wechatClaimBtn = document.getElementById('wechat-claim-btn');
+
     const timerElement = document.getElementById('timer');
     const clockProgress = document.querySelector('.clock-progress');
     const gameOverModal = document.getElementById('game-over-modal');
     const finalScoreElement = document.getElementById('final-score');
+    const finalWechatCountElement = document.getElementById('final-wechat-count');
     const restartBtn = document.getElementById('restart-btn');
     const shareBtn = document.getElementById('share-btn');
     const gameOverCloseBtn = document.getElementById('game-over-close');
     
     let score = 0;
+    let wechatItemCount = 0;
     let imageClickCounts = {};
     let timeLeft = 60;
     let timerInterval;
@@ -62,9 +71,14 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     // Modal Event Listeners
-    if (closeBtn) {
-        closeBtn.addEventListener('click', hideRedPacketModal);
+    if (redPacketCloseBtn) {
+        redPacketCloseBtn.addEventListener('click', hideRedPacketModal);
     }
+    
+    if (wechatItemCloseBtn) {
+        wechatItemCloseBtn.addEventListener('click', hideWechatItemModal);
+    }
+
     if (claimBtn) {
         claimBtn.addEventListener('click', () => {
             hideRedPacketModal();
@@ -77,6 +91,16 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 window.location.href = 'https://yb.tencent.com/fes/red/claim?signature=3984168b467169e0b7d40708890d8b92c1495c1579d6a533ecdde493645dba8c&red_packet_id=27002e9a8f4843f8a85a9700fccfece4&yb_use_wechat_download_page=1';
             }, 500);
+        });
+    }
+
+    if (wechatClaimBtn) {
+        wechatClaimBtn.addEventListener('click', () => {
+            hideWechatItemModal();
+            score += 20; // More points for rare item?
+            wechatItemCount++; // Increment count
+            scoreElement.textContent = `拍马屁次数: ${score}`;
+            showToast("微信道具解锁成功！");
         });
     }
 
@@ -99,6 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === redPacketModal) {
             hideRedPacketModal();
         }
+        if (e.target === wechatItemModal) {
+            hideWechatItemModal();
+        }
     });
 
     function showRedPacketModal() {
@@ -107,6 +134,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function hideRedPacketModal() {
         redPacketModal.classList.add('hidden');
+    }
+
+    function showWechatItemModal() {
+        wechatItemModal.classList.remove('hidden');
+    }
+
+    function hideWechatItemModal() {
+        wechatItemModal.classList.add('hidden');
     }
 
     // Create horses
@@ -134,17 +169,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }, interval);
     }
 
-    function generatePixelHorse() {
+    function generateNormalHorse() {
         const w = 32;
         const h = 24;
         const frames = 4;
-        const scale = 1; // Draw 1:1, scale via CSS
         const canvas = document.createElement('canvas');
         canvas.width = w * frames;
         canvas.height = h;
         const ctx = canvas.getContext('2d');
 
-        // Palette
+        // Palette (Shared)
         const C = {
             _: null,
             b: '#A0522D', // Sienna (Body)
@@ -156,9 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
             p: '#000000'  // Pupil
         };
 
-        // Base Body (Shared shape roughly, but we'll define full frames for better animation)
-        // 32x24 Grid. Head at right (facing right).
-        
         const frame1 = [ // Gathered (Legs under)
             "................................",
             ".......................mm.......",
@@ -292,11 +323,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return canvas.toDataURL();
     }
 
-    function getHorseContent() {
+    // function generateFunnyHorse() REMOVED as we now use a GIF
+
+    function getHorseContent(isFunny = false) {
         const horseContent = document.createElement('div');
         horseContent.className = 'horse-content';
-        // Set sprite sheet as background
-        horseContent.style.backgroundImage = `url(${generatePixelHorse()})`;
+        
+        if (isFunny) {
+            // Use the GIF provided by the user
+            const gifUrl = "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E9%A9%AC.gif";
+            horseContent.style.backgroundImage = `url('${gifUrl}')`;
+            
+            // Override sprite animation styles for GIF
+            horseContent.style.backgroundSize = 'contain';
+            horseContent.style.backgroundPosition = 'center';
+            horseContent.style.animation = 'none'; // Disable sprite animation
+            horseContent.style.transform = 'scaleX(1)'; // Face left (original GIF direction)
+        } else {
+            // White horse GIF
+            const gifUrl = "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E7%99%BD%E9%A9%AC.gif";
+            horseContent.style.backgroundImage = `url('${gifUrl}')`;
+            
+            // Override sprite animation styles for GIF
+            horseContent.style.backgroundSize = 'contain';
+            horseContent.style.backgroundPosition = 'center';
+            horseContent.style.animation = 'none'; // Disable sprite animation
+            horseContent.style.transform = 'scaleX(1)'; // Assume same direction as brown horse GIF
+        }
+        
         return horseContent;
     }
 
@@ -317,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         horse.style.zIndex = Math.floor(top * 10) + 50; // Ensure it's visible but respects depth
         
-        const horseContent = getHorseContent();
+        const horseContent = getHorseContent(false); // Normal for white horse
         horse.appendChild(horseContent);
         
         // Butt interaction area for White Horse
@@ -329,7 +383,14 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             playCoinSound();
             showRandomImage(e.clientX, e.clientY);
-            showRedPacketModal();
+            
+            // Randomly trigger either Red Packet or WeChat Item
+            if (Math.random() < 0.5) {
+                showRedPacketModal();
+            } else {
+                showWechatItemModal();
+            }
+            
             // Optional: Also make it run away or disappear?
             // For now, just show modal. It continues its running-across animation.
         });
@@ -348,6 +409,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4500);
         */
     }
+
+    // Sound effect URLs
+    const soundEffects = [
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%B0%8F%E7%98%AA%E4%B8%89.aac",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E6%88%91%E8%A6%81%E7%87%95%E7%89%8C.aac",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E7%89%8C%E6%B2%A1%E6%9C%89%E9%97%AE%E9%A2%98.aac",
+        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E7%BB%99%E6%88%91%E6%93%A6%E7%9A%AE%E9%9E%8B.aac"
+    ];
 
     function createHorse() {
         const horse = document.createElement('div');
@@ -372,8 +441,9 @@ document.addEventListener('DOMContentLoaded', () => {
         horse.style.animationDelay = `${delay}s`;
         
         // Use GIF instead of emoji
-        const horseContent = getHorseContent();
+        const horseContent = getHorseContent(true); // Funny for brown horse
         horse.appendChild(horseContent);
+
         
         // Butt interaction area
         const butt = document.createElement('div');
@@ -562,7 +632,17 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast();
         
         // Play sound effect
-        playSlapSound();
+        playRandomSound();
+    }
+    
+    function playRandomSound() {
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        
+        const randomSound = soundEffects[Math.floor(Math.random() * soundEffects.length)];
+        const audio = new Audio(randomSound);
+        audio.play().catch(e => console.error("Error playing sound:", e));
     }
 
     function showFeedback(x, y) {
@@ -680,6 +760,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show game over modal
         finalScoreElement.textContent = `以下是您拍马屁的次数排行：`;
         
+        if (finalWechatCountElement) {
+            finalWechatCountElement.textContent = `获得微信道具: ${wechatItemCount} 个`;
+        }
+        
         // Generate Leaderboard
         const leaderboard = document.getElementById('leaderboard');
         if (leaderboard) {
@@ -711,6 +795,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function restartGame() {
         score = 0;
+        wechatItemCount = 0;
         imageClickCounts = {};
         scoreElement.textContent = `拍马屁次数: ${score}`;
         gameOverModal.classList.add('hidden');

@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="marquee-container">
+        <div class="marquee-text">请点击马的屁股</div>
+    </div>
     <div class="prompt-container">
         <h1>拍马屁交友盲盒</h1>
         <div class="timer-container">
@@ -25,11 +28,21 @@
 
     <!-- Red Packet Modal -->
     <div id="red-packet-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
+        <div class="modal-content red-packet-content">
+            <span class="close-btn" id="red-packet-close">&times;</span>
             <h2>🧧 恭喜发财！</h2>
             <p>你拍到了白马的屁股！</p>
             <button id="claim-btn">领取红包</button>
+        </div>
+    </div>
+
+    <!-- WeChat Item Modal -->
+    <div id="wechat-item-modal" class="modal hidden">
+        <div class="modal-content wechat-item-content">
+            <span class="close-btn" id="wechat-item-close">&times;</span>
+            <h2>🔓 解锁成功！</h2>
+            <p>恭喜获得：解锁微信道具</p>
+            <button id="wechat-claim-btn">立即使用</button>
         </div>
     </div>
 
@@ -39,6 +52,7 @@
             <span class="close-btn" id="game-over-close">&times;</span>
             <h2>游戏结束!</h2>
             <p id="final-score"></p>
+            <p id="final-wechat-count" style="margin-top: 5px; font-weight: bold; color: #4CAF50;"></p>
             <div id="leaderboard" class="leaderboard"></div>
             <div class="modal-buttons">
                 <button id="restart-btn">再来一次</button>

@@ -7,9 +7,44 @@ body, html {
     font-family: "Microsoft YaHei", sans-serif;
 }
 
+.marquee-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    z-index: 50; /* Ensure it's on top */
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.marquee-text {
+    position: absolute;
+    white-space: nowrap;
+    animation: marquee 10s linear infinite;
+    font-size: 16px;
+    font-weight: bold;
+    color: #FFD700; /* Gold color for visibility */
+}
+
+@keyframes marquee {
+    0% { left: 100%; }
+    100% { left: -100%; } /* Adjust depending on text length, or use transform: translateX */
+}
+
+/* Improve marquee animation for smoother continuous scroll if needed, 
+   but basic left transition works for simple text */
+@keyframes marquee {
+    from { transform: translateX(100vw); }
+    to { transform: translateX(-100%); }
+}
+
 .prompt-container {
     position: absolute;
-    top: 20px;
+    top: 40px; /* Moved down to make room for marquee */
     left: 50%;
     transform: translateX(-50%);
     background-color: rgba(255, 255, 255, 0.8);
@@ -130,15 +165,25 @@ body, html {
 }
 
 .modal-content {
-    background-color: #d9534f; /* Red packet color */
-    color: #fff;
+    background-color: white;
     padding: 30px;
     border-radius: 15px;
     text-align: center;
-    width: 350px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     position: relative;
-    border: 2px solid #f0ad4e;
+    max-width: 80%;
+    width: 300px;
+    animation: popIn 0.3s ease-out;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.red-packet-content {
+    background-color: #d9534f; /* Red for Red Packet */
+    color: white;
+}
+
+.wechat-item-content {
+    background-color: #4CAF50; /* Green for WeChat */
+    color: white;
 }
 
 .leaderboard {
@@ -185,7 +230,7 @@ body, html {
 
 .modal-content h2 {
     margin-top: 0;
-    color: #f0ad4e; /* Gold */
+    font-size: 24px;
 }
 
 .close-btn {
@@ -202,22 +247,6 @@ body, html {
     color: #f0ad4e;
 }
 
-#claim-btn {
-    background-color: #f0ad4e;
-    color: #d9534f;
-    border: none;
-    padding: 10px 20px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-#claim-btn:hover {
-    background-color: #fff;
-}
-
 .modal-buttons {
     display: flex;
     justify-content: center;
@@ -225,29 +254,21 @@ body, html {
     margin-top: 20px;
 }
 
-#restart-btn, #share-btn {
+.modal-buttons button, #claim-btn, #wechat-claim-btn {
     padding: 10px 20px;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 16px;
+    border: none;
     border-radius: 5px;
     cursor: pointer;
-    border: none;
-    transition: transform 0.1s;
-}
-
-#restart-btn {
     background-color: #f0ad4e;
-    color: #d9534f;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    margin: 5px;
 }
 
-#share-btn {
-    background-color: #5bc0de;
-    color: #fff;
-}
-
-#restart-btn:hover, #share-btn:hover {
-    transform: scale(1.05);
-    filter: brightness(1.1);
+.modal-buttons button:hover, #claim-btn:hover, #wechat-claim-btn:hover {
+    background-color: #ec971f;
 }
 
 @keyframes gallop {
@@ -268,8 +289,7 @@ body, html {
 }
 
 .white-horse {
-    filter: grayscale(100%) brightness(200%);
-    /* pointer-events: none; REMOVED to allow clicking white horse */
+    /* filter: grayscale(100%) brightness(200%); REMOVED: Now using specific white horse GIF */
     z-index: 200 !important;
 }
 
@@ -287,13 +307,13 @@ body, html {
     100% { left: -20%; transform: translateY(0); }
 }
 
-.running-across {
-    animation: runAcross 4s linear infinite;
-}
-
 /* Default horse animation */
 .horse {
     animation: runAcross 15s linear infinite; /* Default animation */
+}
+
+.running-across {
+    animation: runAcross 6s linear infinite; /* Faster than brown horses (8-20s) */
 }
 
 /* Removed redundant .horse img style as .horse-content handles it */
