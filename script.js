@@ -294,6 +294,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function spawnWolf() {
         if (isGameOver) return;
 
+        // 播放狼总专属BGM
+        const wolfBgm = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%9D%A6%E5%85%8Bbgm.AAC');
+        wolfBgm.play().catch(e => console.error("Wolf BGM play failed:", e));
+
         const wolf = document.createElement('div');
         wolf.className = 'horse wolf-character running-across';
 
