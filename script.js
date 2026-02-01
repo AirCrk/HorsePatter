@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const grassland = document.getElementById('grassland');
-    const scoreElement = document.getElementById('score');
+    const scoreElement = document.getElementById('score-display');
     const toast = document.getElementById('toast');
     const itemCountElement = document.getElementById('item-count-display');
     // Modals
@@ -97,37 +97,68 @@ document.addEventListener('DOMContentLoaded', () => {
     let isPaused = false;
     let wolfHasSpawned = false; // 狼总每场游戏只出现一次
     let wolfSpawnTimeout = null;
+    let bgMusic = null; // 背景音乐对象
+
+    // 播放背景音乐
+    function playBackgroundMusic() {
+        // 如果已有音乐在播放，先停止
+        if (bgMusic) {
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+        }
+
+        bgMusic = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E9%A9%AC%E5%8F%AB.AAC');
+        bgMusic.loop = false; // 只播放一次
+        bgMusic.volume = 0.6; // 音量设为60%
+        bgMusic.play().catch(e => console.error("Background music play failed:", e));
+    }
+
+    // 停止背景音乐
+    function stopBackgroundMusic() {
+        if (bgMusic) {
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+        }
+    }
 
     function startTimer() {
         // Reset timer
         timeLeft = 60;
-        timerElement.textContent = `${timeLeft}s`;
-        if (clockProgress) {
-            clockProgress.style.strokeDashoffset = 0;
+        timerElement.textContent = `${timeLeft}`;
+
+        // Reset digital timer states
+        const digitalTimer = document.querySelector('.digital-timer');
+        if (digitalTimer) {
+            digitalTimer.classList.remove('warning', 'critical');
         }
+
         isGameOver = false;
         isPaused = false;
 
         startTimerLoop();
-        startWolfSpawner(); // 启动狼总生成器
+        // 狼总改为通过召唤卡触发，不再自动生成
     }
 
     function startTimerLoop() {
         // Clear existing interval if any
         if (timerInterval) clearInterval(timerInterval);
 
-        const circumference = 113; // 2 * PI * 18
+        const digitalTimer = document.querySelector('.digital-timer');
 
         timerInterval = setInterval(() => {
             if (isPaused) return;
 
             timeLeft--;
-            timerElement.textContent = `${timeLeft}s`;
+            timerElement.textContent = `${timeLeft}`;
 
-            // Update clock progress
-            if (clockProgress) {
-                const offset = circumference - (timeLeft / 60) * circumference;
-                clockProgress.style.strokeDashoffset = offset;
+            // Update digital timer warning states
+            if (digitalTimer) {
+                digitalTimer.classList.remove('warning', 'critical');
+                if (timeLeft <= 10) {
+                    digitalTimer.classList.add('critical');
+                } else if (timeLeft <= 20) {
+                    digitalTimer.classList.add('warning');
+                }
             }
 
             if (timeLeft <= 0) {
@@ -170,12 +201,12 @@ document.addEventListener('DOMContentLoaded', () => {
             hideRedPacketModal();
             // Optional: Add score or special effect
             score += 10;
-            scoreElement.textContent = `已拍马屁人数: ${Object.keys(imageClickCounts).length}`;
+            scoreElement.textContent = `👏 已拍: ${Object.keys(imageClickCounts).length}`;
             showToast("红包领取成功！正在跳转...");
 
-            // Redirect to the red packet URL
+            // 在新窗口打开红包链接
             setTimeout(() => {
-                window.location.href = 'https://yb.tencent.com/fes/red/claim?signature=3984168b467169e0b7d40708890d8b92c1495c1579d6a533ecdde493645dba8c&red_packet_id=27002e9a8f4843f8a85a9700fccfece4&yb_use_wechat_download_page=1';
+                window.open('https://yb.tencent.com/fes/red/claim?signature=3984168b467169e0b7d40708890d8b92c1495c1579d6a533ecdde493645dba8c&red_packet_id=27002e9a8f4843f8a85a9700fccfece4&yb_use_wechat_download_page=1', '_blank');
             }, 500);
         });
     }
@@ -234,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Increment count immediately when found
         wechatItemCount++;
         score += 20; // Add score immediately since button is removed
-        scoreElement.textContent = `已拍马屁人数: ${Object.keys(imageClickCounts).length}`;
+        scoreElement.textContent = `👏 已拍: ${Object.keys(imageClickCounts).length}`;
 
         if (itemCountElement) {
             itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
@@ -251,6 +282,55 @@ document.addEventListener('DOMContentLoaded', () => {
         resumeTimer();
     }
 
+    // 狼总召唤卡弹窗
+    const wolfSummonModal = document.getElementById('wolf-summon-modal');
+    const wolfSummonCloseBtn = document.getElementById('wolf-summon-close');
+    const summonWolfBtn = document.getElementById('summon-wolf-btn');
+
+    function showWolfSummonModal() {
+        wolfSummonModal.classList.remove('hidden');
+        pauseTimer();
+    }
+
+    function hideWolfSummonModal() {
+        wolfSummonModal.classList.add('hidden');
+        resumeTimer();
+    }
+
+    // 狼总召唤卡关闭按钮
+    if (wolfSummonCloseBtn) {
+        wolfSummonCloseBtn.addEventListener('click', hideWolfSummonModal);
+    }
+
+    // 立即召唤按钮 - 点击后随机召唤狼总或摩托
+    if (summonWolfBtn) {
+        summonWolfBtn.addEventListener('click', () => {
+            hideWolfSummonModal();
+
+            // 随机选择召唤狼总或摩托
+            const isWolf = Math.random() < 0.5;
+
+            if (isWolf) {
+                showToast("🐺 狼总正在赶来！");
+                setTimeout(() => {
+                    spawnWolf();
+                }, 500);
+            } else {
+                showToast("🐺 狼总正在赶来！");
+                setTimeout(() => {
+                    spawnMotor();
+                }, 500);
+            }
+        });
+    }
+
+    // 点击弹窗外部关闭
+    window.addEventListener('click', (e) => {
+        if (e.target === wolfSummonModal) {
+            hideWolfSummonModal();
+        }
+    });
+
     // Create horses
     const numberOfHorses = 15;
 
@@ -264,12 +344,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function startWhiteHorseSpawner() {
         if (isGameOver) return;
 
-        // Random interval between 5 and 15 seconds
-        const interval = 5000 + Math.random() * 10000;
+        // Random interval between 3 and 8 seconds (更频繁出现白马)
+        const interval = 3000 + Math.random() * 5000;
 
         setTimeout(() => {
-            // Only spawn if there isn't one already (or maybe allow a couple, but let's stick to 1 to avoid chaos)
-            if (document.querySelectorAll('.white-horse').length === 0) {
+            // 允许同时存在最多2匹白马
+            if (document.querySelectorAll('.white-horse').length < 2) {
                 spawnWhiteHorse();
             }
             startWhiteHorseSpawner(); // Schedule next spawn check
@@ -301,9 +381,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const wolf = document.createElement('div');
         wolf.className = 'horse wolf-character running-across';
 
-        // Random vertical position (perspective)
+        // Random vertical position (perspective) - 狼总只出现在中间或上方，不在底部
         const minTop = 35;
-        const maxTop = 85;
+        const maxTop = 55;
         const top = minTop + Math.random() * (maxTop - minTop);
 
         wolf.style.top = `${top}%`;
@@ -314,10 +394,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const wolfContent = document.createElement('img');
         wolfContent.src = 'https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%9D%A6%E5%85%8B.gif';
         wolfContent.alt = '狼总（侠狼）';
-        wolfContent.style.width = '200px';
+        wolfContent.style.width = '350px';
         wolfContent.style.height = 'auto';
         wolfContent.style.pointerEvents = 'none';
-        wolfContent.style.transform = 'scaleX(-1)'; // 翻转使其朝向左侧
+        // 保持原始方向，狼总朝向左侧（移动方向）
         wolf.appendChild(wolfContent);
 
         // 点击区域
@@ -346,26 +426,103 @@ document.addEventListener('DOMContentLoaded', () => {
             wechatItemCount += 3;
             if (itemCountElement) {
                 itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+                // 动画效果
+                itemCountElement.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    itemCountElement.style.transform = 'scale(1)';
+                }, 200);
             }
 
-            // 显示特殊提示
+            // 显示特殊提示（只保留toast，不弹出道具+1弹窗）
             showToast("🐺 狼总降临！获得3个解锁道具！");
-
-            // 同时触发红包和道具奖励
-            setTimeout(() => {
-                showWechatItemModal();
-            }, 500);
         });
 
         wolf.appendChild(butt);
         grassland.appendChild(wolf);
 
-        // 狼总穿过屏幕后移除（4秒后）
+        // 狼总穿过屏幕后移除（与白马动画时间一致 6 秒 + 缓冲）
         setTimeout(() => {
             if (wolf.parentNode) {
                 wolf.parentNode.removeChild(wolf);
             }
-        }, 4500);
+        }, 6500);
+    }
+
+    // 摩托角色 - 与狼总随机出现
+    function spawnMotor() {
+        if (isGameOver) return;
+
+        // 播放摩托专属配音
+        const motorBgm = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E6%91%A9%E6%89%98.AAC');
+        motorBgm.play().catch(e => console.error("Motor BGM play failed:", e));
+
+        const motor = document.createElement('div');
+        motor.className = 'horse wolf-character running-across';
+
+        // Random vertical position (perspective) - 摩托只出现在中间或上方，不在底部
+        const minTop = 35;
+        const maxTop = 55;
+        const top = minTop + Math.random() * (maxTop - minTop);
+
+        motor.style.top = `${top}%`;
+        motor.style.left = '110%';
+        motor.style.zIndex = Math.floor(top * 10) + 100; // 确保摩托在最上层
+
+        // 使用摩托的GIF图片
+        const motorContent = document.createElement('img');
+        motorContent.src = 'https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E6%91%A9%E6%89%98.gif';
+        motorContent.alt = '摩托';
+        motorContent.style.width = '350px';
+        motorContent.style.height = 'auto';
+        motorContent.style.pointerEvents = 'none';
+        motor.appendChild(motorContent);
+
+        // 点击区域
+        const butt = document.createElement('div');
+        butt.className = 'butt-area wolf-butt';
+        butt.title = '点击摩托获取超级奖励！';
+
+        let hasBeenClicked = false;
+
+        butt.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            if (hasBeenClicked) {
+                showToast("摩托已经被拍过了！");
+                return;
+            }
+
+            hasBeenClicked = true;
+            butt.style.cursor = 'default';
+
+            // 播放金币音效
+            playCoinSound();
+            showRandomImage(e.clientX, e.clientY);
+
+            // 摩托专属奖励 - 给予3个道具
+            wechatItemCount += 3;
+            if (itemCountElement) {
+                itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+                // 动画效果
+                itemCountElement.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    itemCountElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            // 显示特殊提示
+            showToast("🏍️ 摩托降临！获得3个解锁道具！");
+        });
+
+        motor.appendChild(butt);
+        grassland.appendChild(motor);
+
+        // 摩托穿过屏幕后移除
+        setTimeout(() => {
+            if (motor.parentNode) {
+                motor.parentNode.removeChild(motor);
+            }
+        }, 6500);
     }
 
     function generateNormalHorse() {
@@ -594,11 +751,15 @@ document.addEventListener('DOMContentLoaded', () => {
             playCoinSound();
             showRandomImage(e.clientX, e.clientY);
 
-            // Randomly trigger either Red Packet or WeChat Item
-            if (Math.random() < 0.5) {
+            // 随机触发：红包(30%) / 道具(40%) / 狼总召唤卡(30%)
+            const rand = Math.random();
+            if (rand < 0.3) {
                 showRedPacketModal();
-            } else {
+            } else if (rand < 0.7) {
                 showWechatItemModal();
+            } else {
+                // 获得狼总召唤卡
+                showWolfSummonModal();
             }
 
             // Optional: Also make it run away or disappear?
@@ -840,7 +1001,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 统计去重后的人数
         const uniqueCount = Object.keys(imageClickCounts).length;
-        scoreElement.textContent = `已拍马屁人数: ${uniqueCount}`;
+        scoreElement.textContent = `👏 已拍: ${uniqueCount}`;
 
         // Show visual feedback at click location
         showFeedback(x, y);
@@ -974,6 +1135,9 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(timerInterval);
         isGameOver = true;
 
+        // 停止背景音乐
+        stopBackgroundMusic();
+
         // Show game over modal
         // 统计去重后的人数
         const uniquePeopleCount = Object.keys(imageClickCounts).length;
@@ -1106,7 +1270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         score = 0;
         wechatItemCount = 0;
         imageClickCounts = {};
-        scoreElement.textContent = `拍马屁次数: ${score}`;
+        scoreElement.textContent = `👏 已拍: 0`;
 
         // Reset item count display
         if (itemCountElement) {
@@ -1134,6 +1298,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Restart with countdown
         showCountdown(() => {
             startTimer();
+            // 重新启动白马生成器
+            startWhiteHorseSpawner();
         });
     }
 
@@ -1182,6 +1348,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Hide overlay with fade
                 countdownOverlay.classList.add('hidden');
+
+                // Play background music
+                playBackgroundMusic();
 
                 // Start the actual game
                 if (callback) callback();

@@ -87,7 +87,7 @@ html {
 .marquee-text {
     position: absolute;
     white-space: nowrap;
-    animation: marquee 10s linear infinite;
+    animation: marquee 20s linear infinite;
     font-size: 16px;
     font-weight: bold;
     color: #FFD700;
@@ -118,6 +118,90 @@ html {
     }
 }
 
+/* Digital Timer - Top Center */
+.digital-timer-container {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+}
+
+.digital-timer {
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    padding: 15px 40px;
+    border-radius: 15px;
+    border: 3px solid #4CAF50;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.digital-timer #timer {
+    font-family: 'Orbitron', 'Courier New', monospace;
+    font-size: 56px;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 5px;
+    display: block;
+    text-align: center;
+}
+
+.digital-timer #timer::after {
+    content: 's';
+    font-size: 28px;
+    margin-left: 5px;
+    opacity: 0.8;
+}
+
+/* Timer warning state - when time is low */
+.digital-timer.warning {
+    border-color: #ffa502;
+    background: linear-gradient(145deg, #3d2e0a, #2a2005);
+}
+
+.digital-timer.warning #timer {
+    color: #ffa502;
+}
+
+/* Timer critical state - final countdown */
+.digital-timer.critical {
+    border-color: #ff4757;
+    background: linear-gradient(145deg, #3d1a1f, #2a1015);
+    animation: timerShake 0.3s ease-in-out infinite;
+}
+
+.digital-timer.critical #timer {
+    color: #ff4757;
+    animation: timerBlink 0.5s ease-in-out infinite;
+}
+
+@keyframes timerShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-2px);
+    }
+
+    75% {
+        transform: translateX(2px);
+    }
+}
+
+@keyframes timerBlink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
 .prompt-container {
     position: absolute;
     top: 40px;
@@ -133,20 +217,40 @@ html {
     z-index: 10;
 }
 
-.item-count-display {
+/* Top Right Stats Container */
+.top-right-stats {
     position: absolute;
     top: 40px;
-    /* Aligned with prompt container, below marquee */
     right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 20;
+}
+
+.score-display {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #E91E63;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border: 2px solid #E91E63;
+    transition: transform 0.2s;
+}
+
+.score-display:hover {
+    transform: scale(1.05);
+}
+
+.item-count-display {
     background-color: rgba(255, 255, 255, 0.9);
     padding: 10px 15px;
     border-radius: 20px;
     font-size: 16px;
     font-weight: bold;
     color: #4CAF50;
-    /* Green for WeChat */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 20;
     border: 2px solid #4CAF50;
     transition: transform 0.2s;
 }
@@ -288,6 +392,61 @@ html {
     background-color: #4CAF50;
     /* Green for WeChat */
     color: white;
+}
+
+/* Wolf Summon Card Modal */
+.wolf-summon-content {
+    background: linear-gradient(145deg, #4a1a6b, #2d1040);
+    color: white;
+    border: 3px solid #f0ad4e;
+}
+
+.wolf-summon-content h2 {
+    color: #f0ad4e;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.wolf-summon-content p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.wolf-hint {
+    color: #4CAF50;
+    font-size: 16px !important;
+    background: rgba(76, 175, 80, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+    margin: 15px 0 !important;
+}
+
+.wolf-hint strong {
+    color: #f0ad4e;
+    font-size: 20px;
+}
+
+.summon-wolf-btn {
+    padding: 15px 40px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, #f0ad4e, #ec971f);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(240, 173, 78, 0.4);
+    margin-top: 15px;
+}
+
+.summon-wolf-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(240, 173, 78, 0.6);
+}
+
+.summon-wolf-btn:active {
+    transform: translateY(0);
 }
 
 .leaderboard {
@@ -510,7 +669,7 @@ html {
 
 .running-across {
     animation: runAcross 6s linear infinite;
-    /* Faster than brown horses (8-20s) */
+    /* 白马速度较快 */
 }
 
 /* Removed redundant .horse img style as .horse-content handles it */

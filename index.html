@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>拍马屁交友盲盒</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -17,21 +20,26 @@
     <div class="marquee-container">
         <div class="marquee-text">请点击马的屁股 | 拍白色马屁可触发道具及奖励 | 联系微信79602691 可免费上榜，为您获取更多曝光！欢迎各位做私域的朋友合作。</div>
     </div>
-    <div class="prompt-container">
-        <h1>拍马屁交友盲盒</h1>
-        <div class="timer-container">
-            <svg class="clock-svg" width="40" height="40" viewBox="0 0 40 40">
-                <circle class="clock-bg" cx="20" cy="20" r="18"></circle>
-                <circle class="clock-progress" cx="20" cy="20" r="18" transform="rotate(-90 20 20)"></circle>
-            </svg>
-            <span id="timer">60s</span>
+
+    <!-- Digital Clock Timer - Top Center -->
+    <div class="digital-timer-container">
+        <div class="digital-timer">
+            <span id="timer">60</span>
         </div>
-        <p id="score">已拍马屁人数: 0</p>
     </div>
 
-    <!-- Top Right Item Count -->
-    <div id="item-count-display" class="item-count-display">
-        🔓 道具: 0
+    <div class="prompt-container">
+        <h1>拍马屁交友盲盒</h1>
+    </div>
+
+    <!-- Top Right Stats Container -->
+    <div class="top-right-stats">
+        <div id="score-display" class="score-display">
+            👏 已拍: 0
+        </div>
+        <div id="item-count-display" class="item-count-display">
+            🔓 道具: 0
+        </div>
     </div>
 
     <div class="grassland" id="grassland">
@@ -57,6 +65,18 @@
             <p>恭喜获得：解锁微信道具</p>
         </div>
     </div>
+
+    <!-- Wolf Summon Card Modal -->
+    <div id="wolf-summon-modal" class="modal hidden">
+        <div class="modal-content wolf-summon-content">
+            <span class="close-btn" id="wolf-summon-close">&times;</span>
+            <h2>🐺 狼总召唤卡</h2>
+            <p>恭喜你获得一次拍狼总马屁的机会！</p>
+            <p class="wolf-hint">点击狼总可获得 <strong>3个</strong> 微信号解锁道具</p>
+            <button id="summon-wolf-btn" class="summon-wolf-btn">🚀 立即召唤</button>
+        </div>
+    </div>
+
 
     <!-- Game Over Modal -->
     <div id="game-over-modal" class="modal hidden">
