@@ -738,7 +738,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const xiaoweiContent = document.createElement('img');
         xiaoweiContent.src = 'https://cdn.sa.net/2026/02/02/EqgInphSkbNlMOB.gif';
         xiaoweiContent.alt = '小伟';
-        xiaoweiContent.style.width = '400px';
+        xiaoweiContent.style.width = '550px';
         xiaoweiContent.style.height = 'auto';
         xiaoweiContent.style.pointerEvents = 'none';
         xiaowei.appendChild(xiaoweiContent);
