@@ -746,7 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 点击区域
         const butt = document.createElement('div');
         butt.className = 'butt-area wolf-butt';
-        butt.title = '点击小伟获取超级奖励！';
+        butt.title = '点击牛屁股获取超级奖励！';
 
         let hasBeenClicked = false;
 
@@ -754,7 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
 
             if (hasBeenClicked) {
-                showToast("小伟已经被拍过了！");
+                showToast("牛屁屁已经被拍过了！");
                 return;
             }
 
