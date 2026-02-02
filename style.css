@@ -467,6 +467,24 @@ html {
     margin: 10px 0;
 }
 
+/* Xiaowei Summon Card Modal */
+.xiaowei-summon-content {
+    background: linear-gradient(145deg, #00bfff, #1e90ff);
+    color: white;
+    border: 3px solid #87ceeb;
+}
+
+.xiaowei-summon-content h2 {
+    color: #fff;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.xiaowei-summon-content p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
 .leaderboard {
     margin: 15px 0;
     background-color: rgba(0, 0, 0, 0.2);

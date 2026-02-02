@@ -405,6 +405,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // 小伟召唤卡弹窗
+    const xiaoweiSummonModal = document.getElementById('xiaowei-summon-modal');
+    const xiaoweiSummonCloseBtn = document.getElementById('xiaowei-summon-close');
+    const summonXiaoweiBtn = document.getElementById('summon-xiaowei-btn');
+
+    function showXiaoweiSummonModal() {
+        xiaoweiSummonModal.classList.remove('hidden');
+        pauseTimer();
+    }
+
+    function hideXiaoweiSummonModal() {
+        xiaoweiSummonModal.classList.add('hidden');
+        resumeTimer();
+    }
+
+    // 小伟召唤卡关闭按钮
+    if (xiaoweiSummonCloseBtn) {
+        xiaoweiSummonCloseBtn.addEventListener('click', hideXiaoweiSummonModal);
+    }
+
+    // 立即召唤小伟按钮
+    if (summonXiaoweiBtn) {
+        summonXiaoweiBtn.addEventListener('click', () => {
+            hideXiaoweiSummonModal();
+            showToast("🤖 小伟正在赶来！");
+            setTimeout(() => {
+                spawnXiaowei();
+            }, 500);
+        });
+    }
+
+    // 点击弹窗外部关闭小伟召唤卡
+    window.addEventListener('click', (e) => {
+        if (e.target === xiaoweiSummonModal) {
+            hideXiaoweiSummonModal();
+        }
+    });
+
     // Create horses
     const numberOfHorses = 15;
 
@@ -676,6 +714,83 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 6500);
     }
 
+    // 小伟角色
+    function spawnXiaowei() {
+        if (isGameOver) return;
+
+        // 播放小伟专属配音
+        const xiaoweiBgm = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%B0%8F%E4%BC%9F%E5%87%BA%E5%9C%BA.AAC');
+        xiaoweiBgm.play().catch(e => console.error("Xiaowei BGM play failed:", e));
+
+        const xiaowei = document.createElement('div');
+        xiaowei.className = 'horse wolf-character running-across';
+
+        // Random vertical position (perspective)
+        const minTop = 35;
+        const maxTop = 55;
+        const top = minTop + Math.random() * (maxTop - minTop);
+
+        xiaowei.style.top = `${top}%`;
+        xiaowei.style.left = '110%';
+        xiaowei.style.zIndex = 9999;
+
+        // 使用小伟的GIF图片
+        const xiaoweiContent = document.createElement('img');
+        xiaoweiContent.src = 'https://cdn.sa.net/2026/02/02/EqgInphSkbNlMOB.gif';
+        xiaoweiContent.alt = '小伟';
+        xiaoweiContent.style.width = '400px';
+        xiaoweiContent.style.height = 'auto';
+        xiaoweiContent.style.pointerEvents = 'none';
+        xiaowei.appendChild(xiaoweiContent);
+
+        // 点击区域
+        const butt = document.createElement('div');
+        butt.className = 'butt-area wolf-butt';
+        butt.title = '点击小伟获取超级奖励！';
+
+        let hasBeenClicked = false;
+
+        butt.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            if (hasBeenClicked) {
+                showToast("小伟已经被拍过了！");
+                return;
+            }
+
+            hasBeenClicked = true;
+            butt.style.cursor = 'default';
+
+            // 播放金币音效
+            playCoinSound();
+            showRandomImage(e.clientX, e.clientY);
+
+            // 小伟专属奖励 - 给予3个道具
+            wechatItemCount += 3;
+            if (itemCountElement) {
+                itemCountElement.textContent = `🔓 道具: ${wechatItemCount} 个`;
+                // 动画效果
+                itemCountElement.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    itemCountElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            // 显示特殊提示
+            showToast("🤖 小伟驾到！获得3个解锁道具！");
+        });
+
+        xiaowei.appendChild(butt);
+        grassland.appendChild(xiaowei);
+
+        // 小伟穿过屏幕后移除
+        setTimeout(() => {
+            if (xiaowei.parentNode) {
+                xiaowei.parentNode.removeChild(xiaowei);
+            }
+        }, 6500);
+    }
+
     function generateNormalHorse() {
         const w = 32;
         const h = 24;
@@ -909,11 +1024,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (rand < 0.7) {
                 showWechatItemModal();
             } else {
-                // 获得召唤卡 - 随机狼总(50%)或大猪(50%)
-                if (Math.random() < 0.5) {
+                // 获得召唤卡 - 随机三选一：狼总、大猪、小伟
+                const cardRand = Math.random();
+                if (cardRand < 0.33) {
                     showWolfSummonModal();
-                } else {
+                } else if (cardRand < 0.66) {
                     showPigSummonModal();
+                } else {
+                    showXiaoweiSummonModal();
                 }
             }
 
