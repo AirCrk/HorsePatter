@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 在新窗口打开红包链接
             setTimeout(() => {
-                window.open('https://yb.tencent.com/fes/red/claim?signature=3984168b467169e0b7d40708890d8b92c1495c1579d6a533ecdde493645dba8c&red_packet_id=27002e9a8f4843f8a85a9700fccfece4&yb_use_wechat_download_page=1', '_blank');
+                window.open('https://yb.tencent.com/fes/red/claim?signature=eb037ea2e574be17f835b2f4da08341b909b67db3c1a72e898c8dd268ba55927&red_packet_id=3452b35185d54e9983eb6d807131ca09&yb_use_wechat_download_page=1', '_blank');
             }, 500);
         });
     }
