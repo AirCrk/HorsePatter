@@ -443,6 +443,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 老王召唤卡弹窗
+    const laowangSummonModal = document.getElementById('laowang-summon-modal');
+    const laowangSummonCloseBtn = document.getElementById('laowang-summon-close');
+    const summonLaowangBtn = document.getElementById('summon-laowang-btn');
+
+    function showLaowangSummonModal() {
+        laowangSummonModal.classList.remove('hidden');
+        pauseTimer();
+    }
+
+    function hideLaowangSummonModal() {
+        laowangSummonModal.classList.add('hidden');
+        resumeTimer();
+    }
+
+    // 老王召唤卡关闭按钮
+    if (laowangSummonCloseBtn) {
+        laowangSummonCloseBtn.addEventListener('click', hideLaowangSummonModal);
+    }
+
+    // 立即召唤老王按钮
+    if (summonLaowangBtn) {
+        summonLaowangBtn.addEventListener('click', () => {
+            hideLaowangSummonModal();
+            showToast("👴 老王正在赶来！");
+            setTimeout(() => {
+                spawnLaowang();
+            }, 500);
+        });
+    }
+
+    // 点击弹窗外部关闭老王召唤卡
+    window.addEventListener('click', (e) => {
+        if (e.target === laowangSummonModal) {
+            hideLaowangSummonModal();
+        }
+    });
+
     // Create horses
     const numberOfHorses = 15;
 
@@ -791,6 +829,83 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 6500);
     }
 
+    // 老王角色
+    function spawnLaowang() {
+        if (isGameOver) return;
+
+        // 播放老王专属配音
+        const laowangBgm = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E8%87%AA%E5%B7%B1.AAC');
+        laowangBgm.play().catch(e => console.error("Laowang BGM play failed:", e));
+
+        const laowang = document.createElement('div');
+        laowang.className = 'horse wolf-character running-across';
+
+        // Random vertical position (perspective)
+        const minTop = 35;
+        const maxTop = 55;
+        const top = minTop + Math.random() * (maxTop - minTop);
+
+        laowang.style.top = `${top}%`;
+        laowang.style.left = '110%';
+        laowang.style.zIndex = 9999;
+
+        // 使用老王的GIF图片
+        const laowangContent = document.createElement('img');
+        laowangContent.src = 'https://cdn.sa.net/2026/02/02/6A4tFxqLUb1kNDr.gif';
+        laowangContent.alt = '老王';
+        laowangContent.style.width = '450px';
+        laowangContent.style.height = 'auto';
+        laowangContent.style.pointerEvents = 'none';
+        laowang.appendChild(laowangContent);
+
+        // 点击区域
+        const butt = document.createElement('div');
+        butt.className = 'butt-area wolf-butt';
+        butt.title = '点击老王获取超级奖励！';
+
+        let hasBeenClicked = false;
+
+        butt.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            if (hasBeenClicked) {
+                showToast("老王已经被拍过了！");
+                return;
+            }
+
+            hasBeenClicked = true;
+            butt.style.cursor = 'default';
+
+            // 播放金币音效
+            playCoinSound();
+            showRandomImage(e.clientX, e.clientY);
+
+            // 老王专属奖励 - 给予3个道具
+            wechatItemCount += 3;
+            if (itemCountElement) {
+                itemCountElement.textContent = `🔓 道具: ${wechatItemCount} 个`;
+                // 动画效果
+                itemCountElement.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    itemCountElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            // 显示特殊提示
+            showToast("👴 老王驾到！获得3个解锁道具！");
+        });
+
+        laowang.appendChild(butt);
+        grassland.appendChild(laowang);
+
+        // 老王穿过屏幕后移除
+        setTimeout(() => {
+            if (laowang.parentNode) {
+                laowang.parentNode.removeChild(laowang);
+            }
+        }, 6500);
+    }
+
     function generateNormalHorse() {
         const w = 32;
         const h = 24;
@@ -1024,14 +1139,16 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (rand < 0.7) {
                 showWechatItemModal();
             } else {
-                // 获得召唤卡 - 随机三选一：狼总、大猪、小伟
+                // 获得召唤卡 - 随机四选一：狼总、大猪、小伟、老王
                 const cardRand = Math.random();
-                if (cardRand < 0.33) {
+                if (cardRand < 0.25) {
                     showWolfSummonModal();
-                } else if (cardRand < 0.66) {
+                } else if (cardRand < 0.5) {
                     showPigSummonModal();
-                } else {
+                } else if (cardRand < 0.75) {
                     showXiaoweiSummonModal();
+                } else {
+                    showLaowangSummonModal();
                 }
             }
 
