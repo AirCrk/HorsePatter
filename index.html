@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://cdn.sa.net/2026/02/02/RzVXPWBM63qQTf2.png">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -33,10 +34,10 @@
     <!-- Top Right Stats Container -->
     <div class="top-right-stats">
         <div id="score-display" class="score-display">
-            👏 已拍: 0
+            👏 已拍: 0 人
         </div>
         <div id="item-count-display" class="item-count-display">
-            🔓 道具: 0
+            🔓 道具: 0 个
         </div>
     </div>
 
@@ -72,6 +73,17 @@
             <p>恭喜你获得一次拍狼总马屁的机会！</p>
             <p class="wolf-hint">点击狼总可获得 <strong>3个</strong> 微信号解锁道具</p>
             <button id="summon-wolf-btn" class="summon-wolf-btn">🚀 立即召唤</button>
+        </div>
+    </div>
+
+    <!-- Pig Summon Card Modal -->
+    <div id="pig-summon-modal" class="modal hidden">
+        <div class="modal-content pig-summon-content">
+            <span class="close-btn" id="pig-summon-close">&times;</span>
+            <h2>🐷 大猪召唤卡</h2>
+            <p>恭喜你获得一次拍大猪马屁的机会！</p>
+            <p class="wolf-hint">点击大猪可获得 <strong>3个</strong> 微信号解锁道具</p>
+            <button id="summon-pig-btn" class="summon-wolf-btn">🐷 立即召唤大猪！</button>
         </div>
     </div>
 

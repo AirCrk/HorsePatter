@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             hideRedPacketModal();
             // Optional: Add score or special effect
             score += 10;
-            scoreElement.textContent = `👏 已拍: ${Object.keys(imageClickCounts).length}`;
+            scoreElement.textContent = `👏 已拍: ${Object.keys(imageClickCounts).length} 人`;
             showToast("红包领取成功！正在跳转...");
 
             // 在新窗口打开红包链接
@@ -310,10 +310,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Increment count immediately when found
         wechatItemCount++;
         score += 20; // Add score immediately since button is removed
-        scoreElement.textContent = `👏 已拍: ${Object.keys(imageClickCounts).length}`;
+        scoreElement.textContent = `👏 已拍: ${Object.keys(imageClickCounts).length} 人`;
 
         if (itemCountElement) {
-            itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+            itemCountElement.textContent = `🔓 道具: ${wechatItemCount} 个`;
             // Animation
             itemCountElement.style.transform = 'scale(1.3)';
             setTimeout(() => {
@@ -352,20 +352,15 @@ document.addEventListener('DOMContentLoaded', () => {
         summonWolfBtn.addEventListener('click', () => {
             hideWolfSummonModal();
 
-            // 随机选择召唤狼总或摩托
-            const isWolf = Math.random() < 0.5;
-
-            if (isWolf) {
-                showToast("🐺 狼总正在赶来！");
-                setTimeout(() => {
+            // 随机选择召唤狼总或摩托（二选一）
+            showToast("🐺 狼总正在赶来！");
+            setTimeout(() => {
+                if (Math.random() < 0.5) {
                     spawnWolf();
-                }, 500);
-            } else {
-                showToast("🐺 狼总正在赶来！");
-                setTimeout(() => {
+                } else {
                     spawnMotor();
-                }, 500);
-            }
+                }
+            }, 500);
         });
     }
 
@@ -374,7 +369,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === wolfSummonModal) {
             hideWolfSummonModal();
         }
+        if (e.target === pigSummonModal) {
+            hidePigSummonModal();
+        }
     });
+
+    // 大猪召唤卡弹窗
+    const pigSummonModal = document.getElementById('pig-summon-modal');
+    const pigSummonCloseBtn = document.getElementById('pig-summon-close');
+    const summonPigBtn = document.getElementById('summon-pig-btn');
+
+    function showPigSummonModal() {
+        pigSummonModal.classList.remove('hidden');
+        pauseTimer();
+    }
+
+    function hidePigSummonModal() {
+        pigSummonModal.classList.add('hidden');
+        resumeTimer();
+    }
+
+    // 大猪召唤卡关闭按钮
+    if (pigSummonCloseBtn) {
+        pigSummonCloseBtn.addEventListener('click', hidePigSummonModal);
+    }
+
+    // 立即召唤大猪按钮
+    if (summonPigBtn) {
+        summonPigBtn.addEventListener('click', () => {
+            hidePigSummonModal();
+            showToast("🐷 大猪正在赶来！");
+            setTimeout(() => {
+                spawnPig();
+            }, 500);
+        });
+    }
 
     // Create horses
     const numberOfHorses = 15;
@@ -470,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 狼总专属奖励 - 给予3个道具
             wechatItemCount += 3;
             if (itemCountElement) {
-                itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+                itemCountElement.textContent = `🔓 道具: ${wechatItemCount} 个`;
                 // 动画效果
                 itemCountElement.style.transform = 'scale(1.3)';
                 setTimeout(() => {
@@ -547,7 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 摩托专属奖励 - 给予3个道具
             wechatItemCount += 3;
             if (itemCountElement) {
-                itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+                itemCountElement.textContent = `🔓 道具: ${wechatItemCount} 个`;
                 // 动画效果
                 itemCountElement.style.transform = 'scale(1.3)';
                 setTimeout(() => {
@@ -566,6 +595,83 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             if (motor.parentNode) {
                 motor.parentNode.removeChild(motor);
+            }
+        }, 6500);
+    }
+
+    // 大猪/佩奇角色 - 与狼总、摩托随机出现
+    function spawnPig() {
+        if (isGameOver) return;
+
+        // 播放大猪专属配音
+        const pigBgm = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%A4%A7%E7%8C%AA%E5%87%BA%E5%9C%BA.AAC');
+        pigBgm.play().catch(e => console.error("Pig BGM play failed:", e));
+
+        const pig = document.createElement('div');
+        pig.className = 'horse wolf-character running-across';
+
+        // Random vertical position (perspective) - 大猪只出现在中间或上方，不在底部
+        const minTop = 35;
+        const maxTop = 55;
+        const top = minTop + Math.random() * (maxTop - minTop);
+
+        pig.style.top = `${top}%`;
+        pig.style.left = '110%';
+        pig.style.zIndex = 9999; // 确保大猪在最顶层，不被其他角色遮挡
+
+        // 使用大猪的GIF图片
+        const pigContent = document.createElement('img');
+        pigContent.src = 'https://cdn.sa.net/2026/02/02/PQVe37bwjzvFHAN.gif';
+        pigContent.alt = '大猪（佩奇）';
+        pigContent.style.width = '500px';
+        pigContent.style.height = 'auto';
+        pigContent.style.pointerEvents = 'none';
+        pig.appendChild(pigContent);
+
+        // 点击区域
+        const butt = document.createElement('div');
+        butt.className = 'butt-area wolf-butt';
+        butt.title = '点击大猪获取超级奖励！';
+
+        let hasBeenClicked = false;
+
+        butt.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            if (hasBeenClicked) {
+                showToast("大猪已经被拍过了！");
+                return;
+            }
+
+            hasBeenClicked = true;
+            butt.style.cursor = 'default';
+
+            // 播放金币音效
+            playCoinSound();
+            showRandomImage(e.clientX, e.clientY);
+
+            // 大猪专属奖励 - 给予3个道具
+            wechatItemCount += 3;
+            if (itemCountElement) {
+                itemCountElement.textContent = `🔓 道具: ${wechatItemCount} 个`;
+                // 动画效果
+                itemCountElement.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    itemCountElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            // 显示特殊提示
+            showToast("🐷 大猪驾到！获得3个解锁道具！");
+        });
+
+        pig.appendChild(butt);
+        grassland.appendChild(pig);
+
+        // 大猪穿过屏幕后移除
+        setTimeout(() => {
+            if (pig.parentNode) {
+                pig.parentNode.removeChild(pig);
             }
         }, 6500);
     }
@@ -796,15 +902,19 @@ document.addEventListener('DOMContentLoaded', () => {
             playCoinSound();
             showRandomImage(e.clientX, e.clientY);
 
-            // 随机触发：红包(30%) / 道具(40%) / 狼总召唤卡(30%)
+            // 随机触发：红包(30%) / 道具(40%) / 召唤卡(30%)
             const rand = Math.random();
             if (rand < 0.3) {
                 showRedPacketModal();
             } else if (rand < 0.7) {
                 showWechatItemModal();
             } else {
-                // 获得狼总召唤卡
-                showWolfSummonModal();
+                // 获得召唤卡 - 随机狼总(50%)或大猪(50%)
+                if (Math.random() < 0.5) {
+                    showWolfSummonModal();
+                } else {
+                    showPigSummonModal();
+                }
             }
 
             // Optional: Also make it run away or disappear?
@@ -1046,7 +1156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 统计去重后的人数
         const uniqueCount = Object.keys(imageClickCounts).length;
-        scoreElement.textContent = `👏 已拍: ${uniqueCount}`;
+        scoreElement.textContent = `👏 已拍: ${uniqueCount} 人`;
 
         // Show visual feedback at click location
         showFeedback(x, y);
@@ -1270,7 +1380,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update item count display
         if (itemCountElement) {
-            itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+            itemCountElement.textContent = `🔓 道具: ${wechatItemCount} 个`;
         }
 
         // Update the final wechat count display in modal
@@ -1315,11 +1425,11 @@ document.addEventListener('DOMContentLoaded', () => {
         score = 0;
         wechatItemCount = 0;
         imageClickCounts = {};
-        scoreElement.textContent = `👏 已拍: 0`;
+        scoreElement.textContent = `👏 已拍: 0 人`;
 
         // Reset item count display
         if (itemCountElement) {
-            itemCountElement.textContent = `🔓 道具: ${wechatItemCount}`;
+            itemCountElement.textContent = `🔓 道具: ${wechatItemCount} 个`;
         }
 
         // Reset people unlock status
