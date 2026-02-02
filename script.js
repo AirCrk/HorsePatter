@@ -33,57 +33,111 @@ document.addEventListener('DOMContentLoaded', () => {
     // People data - avatars, nicknames, and WeChat IDs
     const peopleData = [
         {
-            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120631_275.jpg",
-            name: "Test001",
-            wechat: "wexin001",
+            avatar: "https://cdn.sa.net/2026/02/02/oqjinWOgeBhNkAG.jpg",
+            name: "安安@大健康",
+            wechat: "ananshop88",
             unlocked: false
         },
         {
-            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120621_958.jpg",
-            name: "Test002",
-            wechat: "Wexin002",
+            avatar: "https://cdn.sa.net/2026/02/02/t4XFZlMv1fVkisb.jpg",
+            name: "小易@AI代写",
+            wechat: "xiaoyi102704",
             unlocked: false
         },
         {
-            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120615_128.jpg",
-            name: "Test003",
-            wechat: "Wexin003",
+            avatar: "https://cdn.sa.net/2026/02/02/fwuFspBLhGTyDi1.jpg",
+            name: "明同学@助贷",
+            wechat: "LJ521280",
             unlocked: false
         },
         {
-            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120604_222.jpg",
-            name: "Test004",
-            wechat: "Wexin004",
+            avatar: "https://cdn.sa.net/2026/02/02/7pDRnCPdbHulTM5.jpg",
+            name: "薯条@私域电商",
+            wechat: "Anais_L",
             unlocked: false
         },
         {
-            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120557_022.jpg",
-            name: "Test005",
-            wechat: "Wexin005",
+            avatar: "https://cdn.sa.net/2026/02/02/CtrfIaR7BGudw1U.jpg",
+            name: "侠狼@AI出海",
+            wechat: "code_cao",
             unlocked: false
         },
         {
-            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120549_145.jpg",
-            name: "Test006",
-            wechat: "Wexin006",
+            avatar: "https://cdn.sa.net/2026/02/02/IfYhTeiHOVZnFzq.jpg",
+            name: "深圳的阳@互联网",
+            wechat: "Passware",
             unlocked: false
         },
         {
-            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120540_995.jpg",
-            name: "Test007",
-            wechat: "Wexin007",
+            avatar: "https://cdn.sa.net/2026/02/02/jzgWx7TfFvLo3S8.jpg",
+            name: "小伟@AI智能硬件",
+            wechat: "siuserxiaowei",
             unlocked: false
         },
         {
-            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120525_410.jpg",
-            name: "Test008",
-            wechat: "Wexin008",
+            avatar: "https://cdn.sa.net/2026/02/02/HTp98PjXbZqs1zw.jpg",
+            name: "数码哥@数码租赁",
+            wechat: "WhitepaperBTC",
             unlocked: false
         },
         {
-            avatar: "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%A4%B4%E5%83%8F.jpg",
-            name: "test009",
-            wechat: "wexin009",
+            avatar: "https://cdn.sa.net/2026/02/02/U2coQkwWMtEsJr3.jpg",
+            name: "大猪@旅游",
+            wechat: "Dazhu0911",
+            unlocked: false
+        },
+        {
+            avatar: "https://cdn.sa.net/2026/02/02/yqK6UhZwesbHuWc.jpg",
+            name: "喵喵@Web3",
+            wechat: "daa1434",
+            unlocked: false
+        },
+        {
+            avatar: "https://cdn.sa.net/2026/02/02/wk8aGl3prBTvOL4.jpg",
+            name: "千穹@Ai出海",
+            wechat: "pac10299",
+            unlocked: false
+        },
+        {
+            avatar: "https://cdn.sa.net/2026/02/02/eQ72hMigYfrldO9.jpg",
+            name: "俊国@小红书",
+            wechat: "wgwg2026",
+            unlocked: false
+        },
+        {
+            avatar: "https://cdn.sa.net/2026/02/02/ahl8fZA1JWuvT2n.jpg",
+            name: "卧龙@小红书",
+            wechat: "SRX11186",
+            unlocked: false
+        },
+        {
+            avatar: "https://cdn.sa.net/2026/02/02/h1WOrft4DSLJYG6.jpg",
+            name: "Jason@个人IP",
+            wechat: "BearJason1",
+            unlocked: false
+        },
+        {
+            avatar: "https://cdn.sa.net/2026/02/02/Sy1fNAm5oFxMBu4.jpg",
+            name: "言絮@IP陪跑",
+            wechat: "DS520QQA",
+            unlocked: false
+        },
+        {
+            avatar: "https://cdn.sa.net/2026/02/02/vX8W1BiUYIKNLn6.jpg",
+            name: "文轩@付费进群",
+            wechat: "vivohuoyu",
+            unlocked: false
+        },
+        {
+            avatar: "https://cdn.sa.net/2026/02/02/RfwAOIp5LSbTXY2.jpg",
+            name: "叶嘉新@网盘拉新",
+            wechat: "xxjj200909",
+            unlocked: false
+        },
+        {
+            avatar: "https://cdn.sa.net/2026/02/02/au71PhfOyjkwsc5.jpg",
+            name: "黎小琴@企业补贴",
+            wechat: "Lxq_430281",
             unlocked: false
         }
     ];
@@ -175,17 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
         isPaused = false;
     }
 
-    const flashImages = [
-        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120631_275.jpg",
-        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120621_958.jpg",
-        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120615_128.jpg",
-        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120604_222.jpg",
-        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120557_022.jpg",
-        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120549_145.jpg",
-        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120540_995.jpg",
-        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_2026-02-01_120525_410.jpg",
-        "https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%A4%B4%E5%83%8F.jpg"
-    ];
+    // 从peopleData中获取所有头像URL
+    const flashImages = peopleData.map(person => person.avatar);
 
     // Modal Event Listeners
     if (redPacketCloseBtn) {
