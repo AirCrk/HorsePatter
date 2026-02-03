@@ -407,8 +407,8 @@ html {
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
-    z-index: 2000;
-    /* 高于 modal 的 z-index (1000)，确保复制成功提示能显示在弹窗之上 */
+    z-index: 9999999;
+    /* 确保toast在所有元素之上 */
 }
 
 .toast.show {
@@ -422,7 +422,8 @@ html {
 /* Modal Styles */
 .modal {
     position: fixed;
-    z-index: 1000;
+    z-index: 999999;
+    /* 确保弹窗在所有角色之上 */
     left: 0;
     top: 0;
     width: 100%;
