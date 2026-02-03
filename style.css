@@ -571,6 +571,24 @@ html {
     margin: 10px 0;
 }
 
+/* Shutiao Summon Card Modal */
+.shutiao-summon-content {
+    background: linear-gradient(145deg, #ff6347, #ff4500);
+    color: white;
+    border: 3px solid #ffa07a;
+}
+
+.shutiao-summon-content h2 {
+    color: #fff;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.shutiao-summon-content p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
 .leaderboard {
     margin: 15px 0;
     background-color: rgba(0, 0, 0, 0.2);
@@ -743,12 +761,12 @@ html {
     bottom: 15% !important;
 }
 
-/* 小伟牛屁股专属点击区域 */
+/* 小伟牛屁股专属点击区域 - 加大范围更容易点击 */
 .xiaowei-butt {
-    width: 150px !important;
-    height: 150px !important;
-    right: 0 !important;
-    bottom: 10% !important;
+    width: 220px !important;
+    height: 200px !important;
+    right: -20px !important;
+    bottom: 5% !important;
 }
 
 @keyframes runAcross {

@@ -491,6 +491,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 薯条召唤卡弹窗
+    const shutiaoSummonModal = document.getElementById('shutiao-summon-modal');
+    const shutiaoSummonCloseBtn = document.getElementById('shutiao-summon-close');
+    const summonShutiao = document.getElementById('summon-shutiao-btn');
+
+    function showShutiaoSummonModal() {
+        shutiaoSummonModal.classList.remove('hidden');
+        pauseTimer();
+    }
+
+    function hideShutiaoSummonModal() {
+        shutiaoSummonModal.classList.add('hidden');
+        resumeTimer();
+    }
+
+    // 薯条召唤卡关闭按钮
+    if (shutiaoSummonCloseBtn) {
+        shutiaoSummonCloseBtn.addEventListener('click', hideShutiaoSummonModal);
+    }
+
+    // 立即召唤薯条按钮
+    if (summonShutiao) {
+        summonShutiao.addEventListener('click', () => {
+            hideShutiaoSummonModal();
+            showToast("🍟 薯条正在赶来！");
+            setTimeout(() => {
+                spawnShutiao();
+            }, 500);
+        });
+    }
+
+    // 点击弹窗外部关闭薯条召唤卡
+    window.addEventListener('click', (e) => {
+        if (e.target === shutiaoSummonModal) {
+            hideShutiaoSummonModal();
+        }
+    });
+
     // Create horses
     const numberOfHorses = 15;
 
@@ -938,6 +976,83 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 6500);
     }
 
+    // 薯条角色
+    function spawnShutiao() {
+        if (isGameOver) return;
+
+        // 播放薯条专属配音
+        const shutiaoBgm = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E8%96%AF%E6%9D%A1bgm.AAC');
+        shutiaoBgm.play().catch(e => console.error("Shutiao BGM play failed:", e));
+
+        const shutiao = document.createElement('div');
+        shutiao.className = 'horse wolf-character running-across';
+
+        // Random vertical position (perspective)
+        const minTop = 35;
+        const maxTop = 55;
+        const top = minTop + Math.random() * (maxTop - minTop);
+
+        shutiao.style.top = `${top}%`;
+        shutiao.style.left = '110%';
+        shutiao.style.zIndex = 99999; // 确保薯条在最顶层，不被其他角色遮挡
+
+        // 使用薯条的GIF图片
+        const shutiaoContent = document.createElement('img');
+        shutiaoContent.src = 'https://cdn.sa.net/2026/02/03/Nj1nVzlXd4YoA3f.gif';
+        shutiaoContent.alt = '薯条';
+        shutiaoContent.style.width = '450px';
+        shutiaoContent.style.height = 'auto';
+        shutiaoContent.style.pointerEvents = 'none';
+        shutiao.appendChild(shutiaoContent);
+
+        // 点击区域
+        const butt = document.createElement('div');
+        butt.className = 'butt-area wolf-butt';
+        butt.title = '点击薯条获取超级奖励！';
+
+        let hasBeenClicked = false;
+
+        butt.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            if (hasBeenClicked) {
+                showToast("薯条已经被拍过了！");
+                return;
+            }
+
+            hasBeenClicked = true;
+            butt.style.cursor = 'default';
+
+            // 播放金币音效
+            playCoinSound();
+            showRandomImage(e.clientX, e.clientY);
+
+            // 薯条专属奖励 - 给予3个道具
+            wechatItemCount += 3;
+            if (itemCountElement) {
+                itemCountElement.textContent = `🔓 道具: ${wechatItemCount} 个`;
+                // 动画效果
+                itemCountElement.style.transform = 'scale(1.3)';
+                setTimeout(() => {
+                    itemCountElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            // 显示特殊提示
+            showToast("🍟 薯条驾到！获得3个解锁道具！");
+        });
+
+        shutiao.appendChild(butt);
+        grassland.appendChild(shutiao);
+
+        // 薯条穿过屏幕后移除
+        setTimeout(() => {
+            if (shutiao.parentNode) {
+                shutiao.parentNode.removeChild(shutiao);
+            }
+        }, 6500);
+    }
+
     function generateNormalHorse() {
         const w = 32;
         const h = 24;
@@ -1175,14 +1290,16 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (rand < 0.7) {
                 showWechatItemModal();
             } else {
-                // 获得召唤卡 - 随机三选一：狼总、大猪、小伟（老王会自动随机出现）
+                // 获得召唤卡 - 随机四选一：狼总、大猪、小伟、薯条（老王会自动随机出现）
                 const cardRand = Math.random();
-                if (cardRand < 0.33) {
+                if (cardRand < 0.25) {
                     showWolfSummonModal();
-                } else if (cardRand < 0.66) {
+                } else if (cardRand < 0.5) {
                     showPigSummonModal();
-                } else {
+                } else if (cardRand < 0.75) {
                     showXiaoweiSummonModal();
+                } else {
+                    showShutiaoSummonModal();
                 }
             }
 
