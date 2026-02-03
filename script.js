@@ -210,6 +210,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 digitalTimer.classList.remove('warning', 'critical');
                 if (timeLeft <= 10) {
                     digitalTimer.classList.add('critical');
+                    // 当倒计时到10秒时播放提示音
+                    if (timeLeft === 10) {
+                        const countdownSound = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E6%97%B6%E9%97%B4%E5%B7%AE%E4%B8%8D%E5%A4%9A%E5%96%BD.AAC');
+                        countdownSound.play().catch(e => console.error("Countdown sound play failed:", e));
+                    }
+                    // 当倒计时到3秒时播放最后倒计时音频
+                    if (timeLeft === 3) {
+                        const finalCountdownSound = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E5%80%92%E8%AE%A1%E6%97%B63%E7%A7%92.AAC');
+                        finalCountdownSound.play().catch(e => console.error("Final countdown sound play failed:", e));
+                    }
                 } else if (timeLeft <= 20) {
                     digitalTimer.classList.add('warning');
                 }
@@ -506,6 +516,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }, interval);
     }
 
+    // 老王随机自动出现一次（在游戏开始10-40秒之间随机出现）
+    let laowangHasAppeared = false;
+    function startLaowangAutoSpawner() {
+        if (isGameOver || laowangHasAppeared) return;
+
+        // 随机在10-40秒之间出现
+        const randomDelay = 10000 + Math.random() * 30000;
+
+        setTimeout(() => {
+            if (!isGameOver && !laowangHasAppeared) {
+                laowangHasAppeared = true;
+                showToast("👴 老王突然出现了！");
+                setTimeout(() => {
+                    spawnLaowang();
+                }, 500);
+            }
+        }, randomDelay);
+    }
+
+    // 启动老王自动出现
+    startLaowangAutoSpawner();
+
     // 狼总角色 - 每场游戏只出现一次
     function startWolfSpawner() {
         if (isGameOver || wolfHasSpawned) return;
@@ -538,7 +570,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         wolf.style.top = `${top}%`;
         wolf.style.left = '110%';
-        wolf.style.zIndex = 9999; // 确保狼总在最顶层，不被其他角色遮挡
+        wolf.style.zIndex = 99999; // 确保狼总在最顶层，不被其他角色遮挡
 
         // 使用狼总的GIF图片
         const wolfContent = document.createElement('img');
@@ -616,7 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         motor.style.top = `${top}%`;
         motor.style.left = '110%';
-        motor.style.zIndex = 9999; // 确保摩托在最顶层，不被其他角色遮挡
+        motor.style.zIndex = 99999; // 确保摩托在最顶层，不被其他角色遮挡
 
         // 使用摩托的GIF图片
         const motorContent = document.createElement('img');
@@ -693,7 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         pig.style.top = `${top}%`;
         pig.style.left = '110%';
-        pig.style.zIndex = 9999; // 确保大猪在最顶层，不被其他角色遮挡
+        pig.style.zIndex = 99999; // 确保大猪在最顶层，不被其他角色遮挡
 
         // 使用大猪的GIF图片
         const pigContent = document.createElement('img');
@@ -770,7 +802,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         xiaowei.style.top = `${top}%`;
         xiaowei.style.left = '110%';
-        xiaowei.style.zIndex = 9999;
+        xiaowei.style.zIndex = 99999; // 确保小伟在最顶层，不被其他角色遮挡
 
         // 使用小伟的GIF图片
         const xiaoweiContent = document.createElement('img');
@@ -781,9 +813,9 @@ document.addEventListener('DOMContentLoaded', () => {
         xiaoweiContent.style.pointerEvents = 'none';
         xiaowei.appendChild(xiaoweiContent);
 
-        // 点击区域
+        // 点击区域 - 使用小伟专属的牛屁股点击区域
         const butt = document.createElement('div');
-        butt.className = 'butt-area wolf-butt';
+        butt.className = 'butt-area xiaowei-butt';
         butt.title = '点击牛屁股获取超级奖励！';
 
         let hasBeenClicked = false;
@@ -847,7 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         laowang.style.top = `${top}%`;
         laowang.style.left = '110%';
-        laowang.style.zIndex = 9999;
+        laowang.style.zIndex = 99999; // 确保老王在最顶层，不被其他角色遮挡
 
         // 使用老王的GIF图片
         const laowangContent = document.createElement('img');
@@ -1129,6 +1161,10 @@ document.addEventListener('DOMContentLoaded', () => {
             hasBeenClicked = true;
             butt.style.cursor = 'default'; // Visual feedback
 
+            // 播放马叫声
+            const horseSound = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E9%A9%AC%E5%8F%AB.AAC');
+            horseSound.play().catch(e => console.error("Horse sound play failed:", e));
+
             playCoinSound();
             showRandomImage(e.clientX, e.clientY);
 
@@ -1139,16 +1175,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (rand < 0.7) {
                 showWechatItemModal();
             } else {
-                // 获得召唤卡 - 随机四选一：狼总、大猪、小伟、老王
+                // 获得召唤卡 - 随机三选一：狼总、大猪、小伟（老王会自动随机出现）
                 const cardRand = Math.random();
-                if (cardRand < 0.25) {
+                if (cardRand < 0.33) {
                     showWolfSummonModal();
-                } else if (cardRand < 0.5) {
+                } else if (cardRand < 0.66) {
                     showPigSummonModal();
-                } else if (cardRand < 0.75) {
-                    showXiaoweiSummonModal();
                 } else {
-                    showLaowangSummonModal();
+                    showXiaoweiSummonModal();
                 }
             }
 
@@ -1414,8 +1448,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showFeedback(x, y) {
+        // 随机弹出文字
+        const feedbackTexts = [
+            '👋 啪!',
+            '💪 用力！',
+            '😣 好疼',
+            '😤 小瘪三',
+            '👋 啪！',
+            '😱 啊！',
+            '🍑 拍!',
+            '💥 嘭!',
+            '🔥 爽!'
+        ];
+        const randomText = feedbackTexts[Math.floor(Math.random() * feedbackTexts.length)];
+
         const feedback = document.createElement('div');
-        feedback.textContent = '👋 啪!';
+        feedback.textContent = randomText;
         feedback.style.position = 'absolute';
         feedback.style.left = `${x}px`;
         feedback.style.top = `${y}px`;
@@ -1508,7 +1556,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 "马儿很享受！",
                 "高情商！",
                 "马到成功！",
-                "溜须拍马！"
+                "溜须拍马！",
+                "用力！",
+                "好疼",
+                "小瘪三",
+                "啪！",
+                "啊！",
+                "给我擦皮鞋",
+                "我要验牌",
+                "牌没有问题"
             ];
             toast.textContent = compliments[Math.floor(Math.random() * compliments.length)];
         }
@@ -1741,6 +1797,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Play background music
                 playBackgroundMusic();
+
+                // 游戏开始2秒后播放提示音，结束后紧跟着播放白马提示音
+                setTimeout(() => {
+                    const guideSound = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E8%AF%B7%E7%82%B9%E5%87%BB%E9%A9%AC%E7%9A%84%E5%B1%81%E8%82%A1.AAC');
+                    guideSound.play().catch(e => console.error("Guide sound play failed:", e));
+
+                    // 第一个音频播放结束后，紧跟着播放白马提示音
+                    guideSound.onended = () => {
+                        const whiteHorseHint = new Audio('https://zuju20251015.oss-cn-beijing.aliyuncs.com/upload/yang/%E7%82%B9%E5%87%BB%E7%99%BD%E9%A9%AC%E7%9A%84%E5%B1%81%E8%82%A1%E4%BC%9A%E6%9C%89%E6%83%8A%E5%96%9C%E5%93%A6.AAC');
+                        whiteHorseHint.play().catch(e => console.error("White horse hint play failed:", e));
+                    };
+                }, 2000);
 
                 // Start the actual game
                 if (callback) callback();
