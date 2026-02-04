@@ -1283,11 +1283,9 @@ document.addEventListener('DOMContentLoaded', () => {
             playCoinSound();
             showRandomImage(e.clientX, e.clientY);
 
-            // 随机触发：红包(30%) / 道具(40%) / 召唤卡(30%)
+            // 随机触发：道具(50%) / 召唤卡(50%)
             const rand = Math.random();
-            if (rand < 0.3) {
-                showRedPacketModal();
-            } else if (rand < 0.7) {
+            if (rand < 0.5) {
                 showWechatItemModal();
             } else {
                 // 获得召唤卡 - 随机四选一：狼总、大猪、小伟、薯条（老王会自动随机出现）
